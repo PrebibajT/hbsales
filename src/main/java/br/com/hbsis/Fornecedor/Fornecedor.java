@@ -7,23 +7,24 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "seg_fornecedores")
-class Fornecedor {
+public class Fornecedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "Nome_Fantasia", unique = true, nullable = false, length = 255)
-    private String NomeFantasia;
-    @Column(name = "CNPJ", nullable = false, length = 16)
-    private String CNPJ;
-    @Column(name = "Razao_Social", unique = true, length = 155)
-    private String RazaoSocial;
-    @Column(name = "Endereco", unique = true,  length = 255)
-    private String Endereco;
-    @Column(name = "Telefone", unique = true, length = 16)
-    private String Telefone;
-    @Column(name = "E-mail", unique = true, length = 120)
-    private String Email;
+
+    @Column(name = "nome_fantasia", unique = true, nullable = false, length = 255)
+    private String nomeFantasia;
+    @Column(name = "cnpj", nullable = false, unique = true, length = 16)
+    private String cnpj;
+    @Column(name = "razao_social", unique = true, length = 155)
+    private String razaoSocial;
+    @Column(name = "endereco", unique = true,  length = 255)
+    private String endereco;
+    @Column(name = "telefone", unique = true, length = 16)
+    private String telefone;
+    @Column(name = "email", unique = true, length = 120)
+    private String email;
 
 
     public Long getId() {
@@ -31,62 +32,62 @@ class Fornecedor {
     }
 
     public String getNomeFantasia() {
-        return NomeFantasia;
+        return nomeFantasia;
     }
 
     public void setNomeFantasia(String nomeFantasia) {
-        NomeFantasia = nomeFantasia;
+        this.nomeFantasia = nomeFantasia;
     }
 
-    public String getCNPJ() {
-        return CNPJ;
+    public String getCnpj() {
+        return cnpj;
     }
 
-    public void setCNPJ(String CNPJ) {
-        this.CNPJ = CNPJ;
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public String getRazaoSocial() {
-        return RazaoSocial;
+        return razaoSocial;
     }
 
     public void setRazaoSocial(String razaoSocial) {
-        RazaoSocial = razaoSocial;
+        this.razaoSocial = razaoSocial;
     }
 
     public String getEndereco() {
-        return Endereco;
+        return endereco;
     }
 
     public void setEndereco(String endereco) {
-        Endereco = endereco;
+        this.endereco = endereco;
     }
 
     public String getTelefone() {
-        return Telefone;
+        return telefone;
     }
 
     public void setTelefone(String telefone) {
-        Telefone = telefone;
+        this.telefone = telefone;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        Email = email;
+        this.email = email;
     }
 
     @Override
     public String toString() {
         return "Nome_Fantasia{" +
                 "id=" + id +
-                ", CNPJ='" + CNPJ + '\'' +
-                ", Razao_Social='" + RazaoSocial + '\'' +
-                ", Endereco='" + Endereco + '\'' +
-                ", Telefone='" + Telefone + '\'' +
-                ", E-mail='" + Email + '\'' +
+                ", CNPJ='" + cnpj + '\'' +
+                ", Razao_Social='" + razaoSocial + '\'' +
+                ", Endereco='" + endereco + '\'' +
+                ", Telefone='" + telefone + '\'' +
+                ", E-mail='" + email + '\'' +
                 '}';
     }
 }

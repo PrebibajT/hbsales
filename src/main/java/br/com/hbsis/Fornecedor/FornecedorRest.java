@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
-
-
 @RestController
 @RequestMapping("/fornecedores")
 public class FornecedorRest {
@@ -23,9 +20,11 @@ public class FornecedorRest {
     @PostMapping
     public FornecedorDTO save(@RequestBody FornecedorDTO fornecedorDTO) {
         LOGGER.info("Recebendo solicitação de persistência de Fornecedor...");
-        LOGGER.debug("Payaload: {}", fornecedorDTO);
+        LOGGER.debug("Payload: {}", fornecedorDTO);
 
-        return this.fornecedorService.save(fornecedorDTO);
+        FornecedorDTO save = this.fornecedorService.save(fornecedorDTO);
+
+        return save;
     }
     @GetMapping("/{id}")
     public FornecedorDTO find(@PathVariable("id") Long id) {

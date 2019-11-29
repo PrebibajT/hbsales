@@ -28,13 +28,14 @@ public class FornecedorService {
         LOGGER.info("Salvando Fornecedor");
         LOGGER.debug("Fornecedor: {}", fornecedorDTO);
 
+
         Fornecedor fornecedor  = new Fornecedor();
-        fornecedor.setCNPJ(fornecedorDTO.getCNPJ());
-        fornecedor.setNomeFantasia(fornecedorDTO.getNomeFantasia());
+        fornecedor.setCnpj(fornecedorDTO.getCnpj());
+        fornecedor.setNomeFantasia(fornecedorDTO.getNome_fantasia());
         fornecedor.setEmail(fornecedorDTO.getEmail());
         fornecedor.setEndereco(fornecedorDTO.getEndereco());
         fornecedor.setTelefone(fornecedorDTO.getTelefone());
-        fornecedor.setRazaoSocial(fornecedorDTO.getRazao_Social());
+        fornecedor.setRazaoSocial(fornecedorDTO.getRazao_social());
 
         fornecedor = this.iFornecedorRepository.save(fornecedor);
 
@@ -48,7 +49,7 @@ public class FornecedorService {
             throw new IllegalArgumentException("FornecedorDTO não deve ser nulo");
         }
 
-        if (StringUtils.isEmpty(fornecedorDTO.getCNPJ())) {
+        if (StringUtils.isEmpty(fornecedorDTO.getCnpj())) {
             throw new IllegalArgumentException("CNPJ não deve ser nula/vazia");
         }
 
@@ -64,7 +65,7 @@ public class FornecedorService {
             throw new IllegalArgumentException("Telefone não deve ser nulo/vazio");
         }
 
-        if (StringUtils.isEmpty(fornecedorDTO.getRazao_Social())) {
+        if (StringUtils.isEmpty(fornecedorDTO.getRazao_social())) {
             throw new IllegalArgumentException("Razao Social não deve ser nulo/vazio");
         }
     }
@@ -79,6 +80,16 @@ public class FornecedorService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
+    public Fornecedor findByFornecedorId(Long id) {
+        Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findById(id);
+        if (fornecedorOptional.isPresent()) {
+            return fornecedorOptional.get();
+        }
+        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+    }
+
+
+
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
 
@@ -89,12 +100,13 @@ public class FornecedorService {
             LOGGER.debug("Payload: {}", fornecedorDTO);
             LOGGER.debug("Fornecedor Existente: {}", fornecedorExistente);
 
-            fornecedorExistente.setCNPJ(fornecedorDTO.getCNPJ());
-            fornecedorExistente.setNomeFantasia(fornecedorDTO.getNomeFantasia());
+
+            fornecedorExistente.setCnpj(fornecedorDTO.getCnpj());
+            fornecedorExistente.setNomeFantasia(fornecedorDTO.getNome_fantasia());
             fornecedorExistente.setEndereco(fornecedorDTO.getEndereco());
             fornecedorExistente.setEmail(fornecedorDTO.getEmail());
             fornecedorExistente.setTelefone(fornecedorDTO.getTelefone());
-            fornecedorExistente.setRazaoSocial(fornecedorDTO.getRazao_Social());
+            fornecedorExistente.setRazaoSocial(fornecedorDTO.getRazao_social());
 
             fornecedorExistente = this.iFornecedorRepository.save(fornecedorExistente);
 
@@ -109,5 +121,17 @@ public class FornecedorService {
         LOGGER.info("Executando delete para Fornecedor de ID: [{}]", id);
 
         this.iFornecedorRepository.deleteById(id);
+    }
+
+    public void exportar(){
+
+
+
+
+    }
+
+    public void importar(){
+
+
     }
 }
