@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/Categorias")
 public class CategoriasRest {
@@ -40,11 +42,11 @@ public class CategoriasRest {
     }
 
     @GetMapping("/exportar")
-    public void exportar() throws Exception{
+    public void exportar(HttpServletResponse response) throws Exception{
 
         LOGGER.info("Exportando categorias");
 
-         this.categoriasService.exportar();
+         this.categoriasService.exportar(response);
 
     }
 }

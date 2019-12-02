@@ -2,16 +2,15 @@ package br.com.hbsis.categoria;
 
 import br.com.hbsis.Fornecedor.FornecedorService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
 import javax.persistence.Id;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilterReader;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,33 +105,32 @@ public class CategoriasService {
         this.iCategoriasRepository.deleteById(id);
     }
 
-    public void exportar() throws IOException {
+    public void exportar(HttpServletResponse response) throws IOException {
 
+        response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
+        response.setContentType("text/csv");
         List <Categorias> express = iCategoriasRepository.findAll();
 
-        FileWriter myWriter = new FileWriter ( " output.csv ");
+        PrintWriter myWriter = response.getWriter();
 
+
+        myWriter.append("ID" +";"+"Nome" +";"+"Codigo" +";"+"Fornecedor");
 
         for (Categorias categorias : express) {
 
-        myWriter.append(categorias.getId().toString()+";");
-        myWriter.append(categorias.getNomeCategoria()+";");
-        myWriter.append(categorias.getCodigoCategoria().toString()+";");
-        myWriter.append(categorias.getFornecedorCategoria().getId().toString());
+            myWriter.append("\n"+categorias.getId().toString() + ";");
+            myWriter.append(categorias.getNomeCategoria() + ";");
+            myWriter.append(categorias.getCodigoCategoria().toString() + ";");
+            myWriter.append(categorias.getFornecedorCategoria().getId().toString());
 
-        myWriter.flush();
+            myWriter.flush();
 
         }
+
 
     }
 
         public void importar(){
-
-
-
-
-
-
 
     }
 
