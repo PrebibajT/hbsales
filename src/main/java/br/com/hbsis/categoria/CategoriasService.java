@@ -1,11 +1,13 @@
 package br.com.hbsis.categoria;
 
 import br.com.hbsis.Fornecedor.FornecedorService;
+import com.opencsv.CSVReader;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.persistence.Id;
@@ -109,29 +111,43 @@ public class CategoriasService {
 
         response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
         response.setContentType("text/csv");
-        List <Categorias> express = iCategoriasRepository.findAll();
+        List<Categorias> express = iCategoriasRepository.findAll();
 
         PrintWriter myWriter = response.getWriter();
 
 
-        myWriter.append("ID" +";"+"Nome" +";"+"Codigo" +";"+"Fornecedor");
+        myWriter.append("ID" + ";" + "Nome" + ";" + "Codigo" + ";" + "Fornecedor");
 
         for (Categorias categorias : express) {
 
-            myWriter.append("\n"+categorias.getId().toString() + ";");
+            myWriter.append("\n" + categorias.getId().toString() + ";");
             myWriter.append(categorias.getNomeCategoria() + ";");
             myWriter.append(categorias.getCodigoCategoria().toString() + ";");
             myWriter.append(categorias.getFornecedorCategoria().getId().toString());
 
             myWriter.flush();
-
         }
-
-
     }
 
-        public void importar(){
+    public void importar(MultipartFile file) throws IOException {
 
+        CategoriasDTO categoriasDTO = new CategoriasDTO();
+
+        BufferedReader myReader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+
+        String line = "";
+        String splitBy = ";";
+
+        line = myReader.readLine();
+        while ((line = myReader.readLine()) != null){
+            String[] Categoria = line.split(splitBy);
+
+            categoriasDTO.setId(Long.parseLong(Categoria[0]));
+            categoriasDTO.setNomeCategoria(Categoria[1]);
+            categoriasDTO.setCodigoCategoria(Long.parseLong(Categoria[2]));
+            categoriasDTO.setIdFornecedor(Long.parseLong(Categoria[3]));
+
+            save(categoriasDTO);
+        }
     }
-
 }
