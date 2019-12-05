@@ -51,6 +51,12 @@ public class FornecedorService {
 
         if (StringUtils.isEmpty(fornecedorDTO.getCnpj())) {
             throw new IllegalArgumentException("CNPJ não deve ser nula/vazia");
+
+        }
+
+        if (fornecedorDTO.getCnpj().length() != 14){
+            throw new IllegalArgumentException("CNPJ não deve ter menos/mais de 14 numeros ");
+
         }
 
         if (StringUtils.isEmpty(fornecedorDTO.getEmail())) {

@@ -1,1 +1,0 @@
-ALTER TABLE seg_fornecedores ALTER COLUMN telefone varchar(16);

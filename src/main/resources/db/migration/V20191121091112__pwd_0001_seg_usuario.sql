@@ -6,5 +6,3 @@ create table seg_usuarios
     uuid  VARCHAR(36)            NOT NULL
 );
 
-create unique index ix_seg_usuario_01 on seg_usuarios (login asc);
-create unique index ix_seg_usuario_02 on seg_usuarios (uuid asc);
