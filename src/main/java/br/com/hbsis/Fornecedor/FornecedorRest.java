@@ -33,6 +33,7 @@ public class FornecedorRest {
 
         return this.fornecedorService.findById(id);
     }
+
     @PutMapping("/{id}")
     public FornecedorDTO udpate(@PathVariable("id") Long id, @RequestBody FornecedorDTO fornecedorDTO) {
         LOGGER.info("Recebendo Update para Fornecedor de ID: {}", id);

@@ -1,7 +1,5 @@
 package br.com.hbsis.categoria;
 
-import br.com.hbsis.Fornecedor.Fornecedor;
-
 public class CategoriasDTO {
     private Long id;
     private Long codigoCategoria;
@@ -10,11 +8,6 @@ public class CategoriasDTO {
 
     public CategoriasDTO(){
 
-    }
-
-    public CategoriasDTO(String nomeCategoria, Long codigoCategoria){
-        this.nomeCategoria = nomeCategoria;
-        this.codigoCategoria = codigoCategoria;
     }
 
     public CategoriasDTO(Long id, Long codigoCategoria, String nomeCategoria, Long idFornecedor){

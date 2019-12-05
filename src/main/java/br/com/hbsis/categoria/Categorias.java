@@ -2,7 +2,6 @@ package br.com.hbsis.categoria;
 
 import br.com.hbsis.Fornecedor.Fornecedor;
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "seg_categorias")
@@ -12,7 +11,7 @@ public class Categorias {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "codigo_Categoria",   length = 255)
+    @Column(name = "codigo_categoria",   length = 255)
     private Long codigoCategoria;
 
     @ManyToOne
@@ -38,13 +37,6 @@ public class Categorias {
         this.codigoCategoria = codigoCategoria;
     }
 
-    public String getNomeCategoria() {
-        return nomeCategoria;
-    }
-
-    public void setNomeCategoria(String nomeCategoria) {
-        this.nomeCategoria = nomeCategoria;
-    }
     public Fornecedor getFornecedorCategoria() {
         return fornecedorCategoria;
     }
@@ -53,6 +45,13 @@ public class Categorias {
         this.fornecedorCategoria = fornecedorCategoria;
     }
 
+    public String getNomeCategoria() {
+        return nomeCategoria;
+    }
+
+    public void setNomeCategoria(String nomeCategoria) {
+        this.nomeCategoria = nomeCategoria;
+    }
 
     @Override
     public String toString() {

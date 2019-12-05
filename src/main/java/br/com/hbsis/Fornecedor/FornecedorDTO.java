@@ -5,9 +5,9 @@ package br.com.hbsis.Fornecedor;
  */
 public class FornecedorDTO {
     private Long id;
-    private String nome_fantasia;
+    private String nomeFantasia;
     private String cnpj;
-    private String razao_social;
+    private String razaoSocial;
     private String endereco;
     private String telefone;
     private String email;
@@ -16,19 +16,14 @@ public class FornecedorDTO {
     }
 
 
-    public FornecedorDTO(String cnpj, String nome_fantasia) {
-        this.cnpj = cnpj;
-        this.nome_fantasia = nome_fantasia;
-    }
-
-    public FornecedorDTO(Long id, String cnpj, String nome_fantasia, String Email, String Telefone, String Endereco, String razao_social) {
+    public FornecedorDTO(Long id, String cnpj, String nomeFantasia, String Email, String Telefone, String Endereco, String razaoSocial) {
         this.id = id;
         this.cnpj = cnpj;
-        this.nome_fantasia = nome_fantasia;
+        this.nomeFantasia = nomeFantasia;
         this.email = Email;
         this.telefone = Telefone;
         this.endereco = Endereco;
-        this.razao_social = razao_social;
+        this.razaoSocial = razaoSocial;
     }
 
     public static FornecedorDTO of(Fornecedor fornecedor) {
@@ -52,11 +47,11 @@ public class FornecedorDTO {
     }
 
     public String getNome_fantasia() {
-        return nome_fantasia;
+        return nomeFantasia;
     }
 
-    public void setNome_fantasia(String nome_fantasia) {
-        this.nome_fantasia = nome_fantasia;
+    public void setNome_fantasia(String nomeFantasia) {
+        this.nomeFantasia = nomeFantasia;
     }
 
     public String getCnpj() {
@@ -68,11 +63,11 @@ public class FornecedorDTO {
     }
 
     public String getRazao_social() {
-        return razao_social;
+        return razaoSocial;
     }
 
-    public void setRazao_social(String razao_social) {
-        this.razao_social = razao_social;
+    public void setRazao_social(String razaoSocial) {
+        this.razaoSocial = razaoSocial;
     }
 
     public String getEndereco() {
@@ -104,7 +99,7 @@ public class FornecedorDTO {
         return "Nome_Fantasia{" +
                 "id=" + id +
                 ", CNPJ='" + cnpj + '\'' +
-                ", Razao_Social='" + razao_social + '\'' +
+                ", Razao_Social='" + razaoSocial + '\'' +
                 ", Endereco='" + endereco + '\'' +
                 ", Telefone='" + telefone + '\'' +
                 ", E-mail='" + email + '\'' +

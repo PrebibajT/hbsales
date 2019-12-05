@@ -1,16 +1,13 @@
 package br.com.hbsis.categoria;
 
 import br.com.hbsis.Fornecedor.FornecedorService;
-import com.opencsv.CSVReader;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import javax.persistence.Id;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
@@ -40,6 +37,7 @@ public class CategoriasService {
 
         categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
         categorias.setNomeCategoria(categoriasDTO.getNomeCategoria());
+
         categorias.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
 
         categorias = this.iCategoriasRepository.save(categorias);
@@ -66,14 +64,14 @@ public class CategoriasService {
         }
     }
 
-    public CategoriasDTO findByCodigoCategoria(Long codigoCategoria) {
-        Optional<Categorias> categoriasOptional = this.iCategoriasRepository.findById(codigoCategoria);
+    public Categorias findByCategoriaId(Long id) {
+        Optional<Categorias> categoriasOptional = this.iCategoriasRepository.findById(id);
 
         if (categoriasOptional.isPresent()) {
-            return CategoriasDTO.of(categoriasOptional.get());
+            return categoriasOptional.get();
         }
 
-        throw new IllegalArgumentException(String.format("codigo da categoria  %s não existe", codigoCategoria));
+        throw new IllegalArgumentException(String.format("id  %s não existe", id));
 
     }
 
@@ -89,9 +87,9 @@ public class CategoriasService {
             LOGGER.debug("Produtos existente: {}", categoriasExistente);
 
             categoriasExistente.setNomeCategoria(categoriasDTO.getNomeCategoria());
-            categoriasExistente.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
-
             categoriasExistente.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
+
+            categoriasExistente.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
 
             categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);
 
