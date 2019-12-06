@@ -5,6 +5,7 @@ import br.com.hbsis.Fornecedor.FornecedorDTO;
 import br.com.hbsis.Fornecedor.FornecedorService;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.br.CNPJ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -150,12 +151,12 @@ public class CategoriasService {
             myWriter.append("\n" +categorias.getCodigoCategoria()+ ";");
             myWriter.append(categorias.getNomeCategoria() + ";");
             myWriter.append(categorias.getFornecedorCategoria().getRazaoSocial()+ ";");
+
             String doisPrimeiros = categorias.getFornecedorCategoria().getCnpj().substring(0,2);
             String tresSegundos= categorias.getFornecedorCategoria().getCnpj().substring(2,5);
             String tresTerceiros = categorias.getFornecedorCategoria().getCnpj().substring(5,8);
             String penultimosQartos = categorias.getFornecedorCategoria().getCnpj().substring(8,12);
             String ultimosDois = categorias.getFornecedorCategoria().getCnpj().substring(12,14);
-
             String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
                     penultimosQartos + "-" + ultimosDois;
 
@@ -168,7 +169,7 @@ public class CategoriasService {
 
     public void importar(MultipartFile file) throws IOException {
 
-        CategoriasDTO categoriasDTO = new CategoriasDTO();
+        Categorias categorias = new Categorias();
 
         BufferedReader myReader = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
@@ -177,14 +178,20 @@ public class CategoriasService {
 
         line = myReader.readLine();
         while ((line = myReader.readLine()) != null){
-            String[] Categoria = line.split(splitBy);
+            String[] categoria = line.split(splitBy);
 
-            categoriasDTO.setId(Long.parseLong(Categoria[0]));
-            categoriasDTO.setNomeCategoria(Categoria[1]);
-            categoriasDTO.setCodigoCategoria((Categoria[2]));
-            categoriasDTO.setIdFornecedor(Long.parseLong(Categoria[3]));
+           categorias.setCodigoCategoria(categoria[0]);
+           categorias.setNomeCategoria(categoria[1]);
 
-            save(categoriasDTO);
+            String cnpjMasked = categoria[3];
+            String desmascaradoCnpj = cnpjMasked.substring(0,2) + cnpjMasked.substring(3,6) +cnpjMasked.substring(7,10) +
+                                      cnpjMasked.substring(11,15) +cnpjMasked.substring(16,18) ;
+
+            Optional<Fornecedor> fornecedor = this.fornecedorService.findByCnpj(desmascaradoCnpj);
+            categorias.setFornecedorCategoria(fornecedor.get());
+
+            this.iCategoriasRepository.save(categorias);
+
         }
     }
 }
