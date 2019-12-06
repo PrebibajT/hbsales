@@ -2,7 +2,7 @@ package br.com.hbsis.categoria;
 
 public class CategoriasDTO {
     private Long id;
-    private Long codigoCategoria;
+    private String codigoCategoria;
     private Long idFornecedor;
     private String nomeCategoria;
 
@@ -10,14 +10,14 @@ public class CategoriasDTO {
 
     }
 
-    public CategoriasDTO(Long id, Long codigoCategoria, String nomeCategoria, Long idFornecedor){
+    public CategoriasDTO(Long id, String codigoCategoria, String nomeCategoria, Long idFornecedor){
         this.id = id;
         this.codigoCategoria = codigoCategoria;
         this.nomeCategoria = nomeCategoria;
         this.idFornecedor = idFornecedor;
     }
 
-    public Long getCodigoCategoria() {
+    public String getCodigoCategoria() {
         return codigoCategoria;
     }
 
@@ -29,7 +29,7 @@ public class CategoriasDTO {
         this.id = id;
     }
 
-    public void setCodigoCategoria(Long codigoCategoria) {
+    public void setCodigoCategoria(String codigoCategoria) {
         this.codigoCategoria = codigoCategoria;
     }
 

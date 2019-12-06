@@ -1,5 +1,7 @@
 package br.com.hbsis.categoria;
 
+import br.com.hbsis.Fornecedor.Fornecedor;
+import br.com.hbsis.Fornecedor.FornecedorDTO;
 import br.com.hbsis.Fornecedor.FornecedorService;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,9 +38,23 @@ public class CategoriasService {
         Categorias categorias = new Categorias();
 
         categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
+
+        if(categoriasDTO.getCodigoCategoria().length() < 3 ){
+            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
+            categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+        }
+        if(categoriasDTO.getCodigoCategoria().length() < 2 ){
+            String minhaVariavelConcatenada = "0" + categoriasDTO.getCodigoCategoria();
+            categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+
+        }
+
         categorias.setNomeCategoria(categoriasDTO.getNomeCategoria());
 
-        categorias.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
+        Fornecedor byFornecedorId = fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
+        categorias.setFornecedorCategoria(byFornecedorId);
+
+        categorias.setCodigoCategoria(this.reValidate(byFornecedorId, categoriasDTO));
 
         categorias = this.iCategoriasRepository.save(categorias);
 
@@ -59,6 +75,7 @@ public class CategoriasService {
             throw new IllegalArgumentException("O código da categoria não pode ser nulo");
         }
 
+
         if (StringUtils.isEmpty(categoriasDTO.getNomeCategoria())) {
             throw new IllegalArgumentException("O nome da categoria não pode ser nulo");
         }
@@ -72,6 +89,17 @@ public class CategoriasService {
         }
 
         throw new IllegalArgumentException(String.format("id  %s não existe", id));
+
+    }
+
+    public String reValidate (Fornecedor fornecedor, CategoriasDTO categoriasDTO){
+
+
+     String subCNPJ= fornecedor.getCnpj().substring(10,14);
+
+      String codigoCompleto = "CAT" + subCNPJ + categoriasDTO.getCodigoCategoria();
+
+        return codigoCompleto;
 
     }
 
@@ -92,6 +120,7 @@ public class CategoriasService {
             categoriasExistente.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
 
             categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);
+            categoriasExistente.setCodigoCategoria(this.reValidate(categoriasExistente.getFornecedorCategoria(), categoriasDTO));
 
             return CategoriasDTO.of(categoriasExistente);
         }
@@ -142,7 +171,7 @@ public class CategoriasService {
 
             categoriasDTO.setId(Long.parseLong(Categoria[0]));
             categoriasDTO.setNomeCategoria(Categoria[1]);
-            categoriasDTO.setCodigoCategoria(Long.parseLong(Categoria[2]));
+            categoriasDTO.setCodigoCategoria((Categoria[2]));
             categoriasDTO.setIdFornecedor(Long.parseLong(Categoria[3]));
 
             save(categoriasDTO);

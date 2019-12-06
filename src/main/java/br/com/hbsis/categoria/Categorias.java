@@ -11,14 +11,14 @@ public class Categorias {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "codigo_categoria",   length = 255)
-    private Long codigoCategoria;
+    @Column(name = "codigo_categoria",   length = 10)
+    private String codigoCategoria;
 
     @ManyToOne
     @JoinColumn (name = "id_fornecedor", referencedColumnName="id")
     private Fornecedor fornecedorCategoria;
 
-    @Column(name = "nome_categoria", unique = true,  length = 255)
+    @Column(name = "nome_categoria", unique = true,  length = 50)
     private String nomeCategoria;
 
     public Long getId() {
@@ -29,11 +29,11 @@ public class Categorias {
         this.id = id;
     }
 
-    public Long getCodigoCategoria() {
+    public String getCodigoCategoria() {
         return codigoCategoria;
     }
 
-    public void setCodigoCategoria(Long codigoCategoria) {
+    public void setCodigoCategoria(String codigoCategoria) {
         this.codigoCategoria = codigoCategoria;
     }
 
