@@ -7,7 +7,7 @@ create table seg_categorias
 
 );
 
-create unique index ix_seg_categorias_02 on seg_categorias (id_fornecedor asc);
+
 
 
 

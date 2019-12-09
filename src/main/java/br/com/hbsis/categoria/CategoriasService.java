@@ -76,7 +76,6 @@ public class CategoriasService {
             throw new IllegalArgumentException("O código da categoria não pode ser nulo");
         }
 
-
         if (StringUtils.isEmpty(categoriasDTO.getNomeCategoria())) {
             throw new IllegalArgumentException("O nome da categoria não pode ser nulo");
         }

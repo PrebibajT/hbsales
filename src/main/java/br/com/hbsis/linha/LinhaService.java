@@ -35,7 +35,29 @@ public class LinhaService {
 
         Linha linha = new Linha();
 
-        linha.setCodigoLinha(linhaDTO.getCodigoLinha());
+        linha.setCodigoLinha(linhaDTO.getCodigoLinha().toUpperCase());
+        StringBuilder concatenationVariation = new StringBuilder();
+
+        if(linhaDTO.getCodigoLinha().length() != 10 ){
+            int resto = 10 - linhaDTO.getCodigoLinha().length();
+            System.out.println("A");
+
+         for (int i = 0 ; i < resto ; i++){
+              concatenationVariation.append("0");
+             System.out.println(concatenationVariation);
+
+         }
+
+         String variationConcdatenation = concatenationVariation.toString() + linhaDTO.getCodigoLinha();
+
+            variationConcdatenation = variationConcdatenation.toUpperCase();
+
+         linha.setCodigoLinha(variationConcdatenation);
+
+            System.out.println(linhaDTO.getCodigoLinha());
+
+        }
+
         linha.setNome(linhaDTO.getNome());
 
         linha.setCategoriaLinha(categoriasService.findByCategoriaId(linhaDTO.getIdCategoria()));
@@ -52,9 +74,11 @@ public class LinhaService {
             throw new IllegalArgumentException("LinhaDTO  não deve ser nulo");
         }
 
-        if (linhaDTO.getCodigoLinha() == null) {
+        if (StringUtils.isEmpty(linhaDTO.getCodigoLinha())) {
             throw new IllegalArgumentException("O código da linha não pode ser nulo");
         }
+
+
 
         if (linhaDTO.getIdCategoria() == null) {
             throw new IllegalArgumentException("A linha da categoria não pode ser nulo");
@@ -123,14 +147,13 @@ public class LinhaService {
 
         PrintWriter myWriter = response.getWriter();
 
-
         myWriter.append("ID" + ";" + "Nome" + ";" + "Codigo" + ";" + "Linha");
 
         for (Linha linha : express) {
 
             myWriter.append("\n" + linha.getId().toString() + ";");
             myWriter.append(linha.getNome() + ";");
-            myWriter.append(linha.getCodigoLinha().toString() + ";");
+            myWriter.append(linha.getCodigoLinha() + ";");
             myWriter.append(linha.getCategoriaLinha().getId().toString());
 
             myWriter.flush();
@@ -152,7 +175,7 @@ public class LinhaService {
 
             linhaDTO.setId(Long.parseLong(Linha[0]));
             linhaDTO.setNome(Linha[1]);
-            linhaDTO.setCodigoLinha(Long.parseLong(Linha[2]));
+            linhaDTO.setCodigoLinha((Linha[2]));
             linhaDTO.setIdCategoria(Long.parseLong(Linha[3]));
 
             save(linhaDTO);

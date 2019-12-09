@@ -3,7 +3,7 @@ package br.com.hbsis.linha;
 public class LinhaDTO {
 
     private Long id;
-    private Long codigoLinha;
+    private String codigoLinha;
     private Long idCategoria;
     private String nome;
 
@@ -11,7 +11,7 @@ public class LinhaDTO {
 
     }
 
-    public LinhaDTO(Long id, Long codigoLinha, Long idCategoria, String nome){
+    public LinhaDTO(Long id, String codigoLinha, Long idCategoria, String nome){
     this.id = id;
     this.codigoLinha = codigoLinha;
     this.idCategoria = idCategoria;
@@ -25,11 +25,11 @@ public class LinhaDTO {
         this.id = id;
     }
 
-    public Long getCodigoLinha() {
+    public String getCodigoLinha() {
         return codigoLinha;
     }
 
-    public void setCodigoLinha(Long codigoLinha) {
+    public void setCodigoLinha(String codigoLinha) {
         this.codigoLinha = codigoLinha;
     }
 
