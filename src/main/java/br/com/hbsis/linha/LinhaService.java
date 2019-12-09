@@ -147,14 +147,14 @@ public class LinhaService {
 
         PrintWriter myWriter = response.getWriter();
 
-        myWriter.append("ID" + ";" + "Nome" + ";" + "Codigo" + ";" + "Linha");
+        myWriter.append("Codigo linha" + ";" + "Nome" + ";" + "Codigo categoria" + ";" + "Nome categoria");
 
         for (Linha linha : express) {
 
-            myWriter.append("\n" + linha.getId().toString() + ";");
+            myWriter.append("\n" + linha.getCodigoLinha() + ";");
             myWriter.append(linha.getNome() + ";");
-            myWriter.append(linha.getCodigoLinha() + ";");
-            myWriter.append(linha.getCategoriaLinha().getId().toString());
+            myWriter.append(linha.getCategoriaLinha().getId()+ ";");
+            myWriter.append(linha.getCategoriaLinha().getNomeCategoria());
 
             myWriter.flush();
         }
