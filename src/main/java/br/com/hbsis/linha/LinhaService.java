@@ -196,7 +196,7 @@ public class LinhaService {
 
                 if (paraisoFiscal == null ){
                     throw new IllegalArgumentException(String.format("Não vai prestar contas para o paraíso fiscal?" +
-                            "que coisa feia em"));
+                            "que coisa feia em mestre"));
 
                 }
 
@@ -204,8 +204,9 @@ public class LinhaService {
                 this.iLinhaRepository.save(linha);
                 LOGGER.info("Tudo ok mestre");
 
+            }else {
+                throw new IllegalArgumentException("Azedo mestre");
             }
-
 
         }
 
