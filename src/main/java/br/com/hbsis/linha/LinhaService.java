@@ -200,15 +200,11 @@ public class LinhaService {
 
                 }
 
-
                 linha.getCategoriaLinha().setId(paraisoFiscal);
                 this.iLinhaRepository.save(linha);
                 LOGGER.info("Tudo ok mestre");
 
             }
-
-
-
 
 
         }
