@@ -1,7 +1,9 @@
 package br.com.hbsis.linha;
 
+import br.com.hbsis.categoria.Categorias;
 import br.com.hbsis.categoria.CategoriasService;
 
+import br.com.hbsis.categoria.ICategoriasRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +22,14 @@ public class LinhaService {
 
     private final ILinhaRepository iLinhaRepository;
     private final CategoriasService categoriasService;
+    private final ICategoriasRepository iCategoriasRepository;
 
-    public LinhaService(ILinhaRepository ilinhaRepository, CategoriasService categoriasService) {
+    public LinhaService(ILinhaRepository ilinhaRepository, CategoriasService categoriasService, ICategoriasRepository iCategoriasRepository) {
         this.iLinhaRepository = ilinhaRepository;
         this.categoriasService = categoriasService;
-
+        this.iCategoriasRepository = iCategoriasRepository;
     }
+
     public LinhaDTO save(LinhaDTO linhaDTO) {
 
         this.validate(linhaDTO);
@@ -38,21 +42,21 @@ public class LinhaService {
         linha.setCodigoLinha(linhaDTO.getCodigoLinha().toUpperCase());
         StringBuilder concatenationVariation = new StringBuilder();
 
-        if(linhaDTO.getCodigoLinha().length() != 10 ){
+        if (linhaDTO.getCodigoLinha().length() != 10) {
             int resto = 10 - linhaDTO.getCodigoLinha().length();
             System.out.println("A");
 
-         for (int i = 0 ; i < resto ; i++){
-              concatenationVariation.append("0");
-             System.out.println(concatenationVariation);
+            for (int i = 0; i < resto; i++) {
+                concatenationVariation.append("0");
+                System.out.println(concatenationVariation);
 
-         }
+            }
 
-         String variationConcdatenation = concatenationVariation.toString() + linhaDTO.getCodigoLinha();
+            String variationConcdatenation = concatenationVariation.toString() + linhaDTO.getCodigoLinha();
 
             variationConcdatenation = variationConcdatenation.toUpperCase();
 
-         linha.setCodigoLinha(variationConcdatenation);
+            linha.setCodigoLinha(variationConcdatenation);
 
             System.out.println(linhaDTO.getCodigoLinha());
 
@@ -60,14 +64,17 @@ public class LinhaService {
 
         linha.setNome(linhaDTO.getNome());
 
-        linha.setCategoriaLinha(categoriasService.findByCategoriaId(linhaDTO.getIdCategoria()));
+        Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
+
+        linha.setCategoriaLinha(categorias.get());
 
         linha = this.iLinhaRepository.save(linha);
 
         return LinhaDTO.of(linha);
 
     }
-    private void validate(LinhaDTO linhaDTO){
+
+    private void validate(LinhaDTO linhaDTO) {
         LOGGER.info("Validando Linha");
 
         if (linhaDTO == null) {
@@ -77,7 +84,6 @@ public class LinhaService {
         if (StringUtils.isEmpty(linhaDTO.getCodigoLinha())) {
             throw new IllegalArgumentException("O código da linha não pode ser nulo");
         }
-
 
 
         if (linhaDTO.getIdCategoria() == null) {
@@ -90,6 +96,7 @@ public class LinhaService {
 
     }
 
+
     public LinhaDTO findById(Long id) {
         Optional<Linha> linhaSuper = this.iLinhaRepository.findById(id);
 
@@ -100,20 +107,20 @@ public class LinhaService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public  LinhaDTO findByCodigoLinha(Long codigoLinha){
-        Optional<Linha> linhaOptional = this.iLinhaRepository.findById(codigoLinha) ;
+    public LinhaDTO findByCodigoLinha(Long codigoLinha) {
+        Optional<Linha> linhaOptional = this.iLinhaRepository.findById(codigoLinha);
 
-        if(linhaOptional.isPresent()){
+        if (linhaOptional.isPresent()) {
             return LinhaDTO.of(linhaOptional.get());
         }
 
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", codigoLinha));
     }
 
-    public LinhaDTO update(LinhaDTO linhaDTO, Long id){
+    public LinhaDTO update(LinhaDTO linhaDTO, Long id) {
         Optional<Linha> linhaSuperOptional = this.iLinhaRepository.findById(id);
 
-        if(linhaSuperOptional.isPresent()){
+        if (linhaSuperOptional.isPresent()) {
             Linha linhaSuper = linhaSuperOptional.get();
 
             LOGGER.info("Atualizando linha.... id:[{}]", linhaSuper.getCodigoLinha());
@@ -123,7 +130,9 @@ public class LinhaService {
             linhaSuper.setNome(linhaDTO.getNome());
             linhaSuper.setCodigoLinha(linhaDTO.getCodigoLinha());
 
-            linhaSuper.setCategoriaLinha(categoriasService.findByCategoriaId(linhaDTO.getIdCategoria()));
+            Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
+
+            linhaSuper.setCategoriaLinha(categorias.get());
 
             linhaSuper = this.iLinhaRepository.save(linhaSuper);
 
@@ -133,7 +142,7 @@ public class LinhaService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public void delete(Long id ){
+    public void delete(Long id) {
         LOGGER.info("Executando delete para linha de ID: [{}]", id);
 
         this.iLinhaRepository.deleteById(id);
@@ -153,7 +162,7 @@ public class LinhaService {
 
             myWriter.append("\n" + linha.getCodigoLinha() + ";");
             myWriter.append(linha.getNome() + ";");
-            myWriter.append(linha.getCategoriaLinha().getId()+ ";");
+            myWriter.append(linha.getCategoriaLinha().getCodigoCategoria() + ";");
             myWriter.append(linha.getCategoriaLinha().getNomeCategoria());
 
             myWriter.flush();
@@ -162,7 +171,7 @@ public class LinhaService {
 
     public void importar(MultipartFile file) throws IOException {
 
-        LinhaDTO linhaDTO = new LinhaDTO();
+        Linha linha = new Linha();
 
         BufferedReader meuLeitor = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
@@ -170,15 +179,40 @@ public class LinhaService {
         String splitBy = ";";
 
         line = meuLeitor.readLine();
-        while ((line = meuLeitor.readLine()) != null){
-            String[] Linha = line.split(splitBy);
+        while ((line = meuLeitor.readLine()) != null) {
+            String[] linhas = line.split(splitBy);
 
-            linhaDTO.setId(Long.parseLong(Linha[0]));
-            linhaDTO.setNome(Linha[1]);
-            linhaDTO.setCodigoLinha((Linha[2]));
-            linhaDTO.setIdCategoria(Long.parseLong(Linha[3]));
+            linha.setCodigoLinha(linhas[0]);
+            linha.setNome(linhas[1]);
+            Long idsinhio = linha.getId();
 
-            save(linhaDTO);
+
+            Optional<Categorias> categoriasOptional = iCategoriasRepository.findByCodigoCategoria(linhas[2]);
+            if (categoriasOptional.isPresent()) {
+
+                Categorias byCodigoCategoria = this.categoriasService.findByCodigoCategoria(linhas[2]);
+                linha.setCategoriaLinha(byCodigoCategoria);
+                Long paraisoFiscal = categoriasOptional.get().getId();
+
+                if (paraisoFiscal == null ){
+                    throw new IllegalArgumentException(String.format("Não vai prestar contas para o paraíso fiscal?" +
+                            "que coisa feia em"));
+
+                }
+
+
+                linha.getCategoriaLinha().setId(paraisoFiscal);
+                this.iLinhaRepository.save(linha);
+                LOGGER.info("Tudo ok mestre");
+
+            }
+
+
+
+
+
         }
+
     }
+
 }

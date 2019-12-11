@@ -3,10 +3,11 @@ package br.com.hbsis.categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/**
- * Classe responsável pela comunciação com o banco de dados
- */
+import java.util.Optional;
+
 @Repository
 public interface ICategoriasRepository extends JpaRepository<Categorias, Long> {
+
+    Optional <Categorias> findByCodigoCategoria (String codigoCategoria);
 
 }

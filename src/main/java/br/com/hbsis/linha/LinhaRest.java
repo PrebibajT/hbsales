@@ -62,7 +62,7 @@ public class LinhaRest {
 
     @GetMapping("/importar")
     public void importar(@RequestParam("file") MultipartFile file) throws Exception {
-        LOGGER.info("Exportando categorias");
+        LOGGER.info("Importando categorias");
 
         this.linhaService.importar(file);
     }

@@ -62,6 +62,16 @@ public class CategoriasService {
         return CategoriasDTO.of(categorias);
     }
 
+    public Categorias findByCodigoCategoria (String codigoCategoria){
+            Optional<Categorias> codigoQTem = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
+
+        if (codigoQTem.isPresent()){
+            return codigoQTem.get();
+
+        }
+        throw new IllegalArgumentException("O código da categoria não é para ser null, seu mongol");
+    }
+
     private void validate(CategoriasDTO categoriasDTO) {
         LOGGER.info("Validando produtos");
 
@@ -81,19 +91,19 @@ public class CategoriasService {
         }
     }
 
-    public Categorias findByCategoriaId(Long id) {
+
+    public Optional<Categorias> findByCategoriaId(Long id) {
         Optional<Categorias> categoriasOptional = this.iCategoriasRepository.findById(id);
 
         if (categoriasOptional.isPresent()) {
-            return categoriasOptional.get();
+            return categoriasOptional;
         }
 
         throw new IllegalArgumentException(String.format("id  %s não existe", id));
-
     }
 
-    public String reValidate (Fornecedor fornecedor, CategoriasDTO categoriasDTO){
 
+    public String reValidate (Fornecedor fornecedor, CategoriasDTO categoriasDTO){
 
      String subCNPJ= fornecedor.getCnpj().substring(10,14);
 
@@ -103,12 +113,12 @@ public class CategoriasService {
 
     }
 
+
     public CategoriasDTO update(CategoriasDTO categoriasDTO, Long id) {
         Optional<Categorias> categoriasExistenteOptional = this.iCategoriasRepository.findById(id);
 
         if (categoriasExistenteOptional.isPresent()) {
             Categorias categoriasExistente = categoriasExistenteOptional.get();
-
 
             LOGGER.info("Atualizando produtos.... id:[{}]", categoriasExistente.getCodigoCategoria());
             LOGGER.debug("Payload: {}", categoriasDTO);
@@ -128,11 +138,13 @@ public class CategoriasService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
+
     public void delete(Long id) {
         LOGGER.info("Executando delete para produto de ID: [{}]", id);
 
         this.iCategoriasRepository.deleteById(id);
     }
+
 
     public void exportar(HttpServletResponse response) throws IOException {
 
@@ -165,6 +177,7 @@ public class CategoriasService {
             myWriter.flush();
         }
     }
+
 
     public void importar(MultipartFile file) throws IOException {
 
