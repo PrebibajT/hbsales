@@ -68,8 +68,8 @@ public class LinhaService {
 
         linha.setCategoriaLinha(categorias.get());
 
-        linha = this.iLinhaRepository.save(linha);
 
+        linha = this.iLinhaRepository.save(linha);
         return LinhaDTO.of(linha);
 
     }
@@ -107,11 +107,11 @@ public class LinhaService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public LinhaDTO findByCodigoLinha(Long codigoLinha) {
+    public Optional <Linha> findByCodigoLinha(Long codigoLinha) {
         Optional<Linha> linhaOptional = this.iLinhaRepository.findById(codigoLinha);
 
         if (linhaOptional.isPresent()) {
-            return LinhaDTO.of(linhaOptional.get());
+            return linhaOptional;
         }
 
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", codigoLinha));
@@ -127,15 +127,14 @@ public class LinhaService {
             LOGGER.debug("Payload: {}", linhaDTO);
             LOGGER.debug("linha existente: {}", linhaSuper);
 
+
+            Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
+            linhaSuper.setCategoriaLinha(categorias.get());
+
             linhaSuper.setNome(linhaDTO.getNome());
             linhaSuper.setCodigoLinha(linhaDTO.getCodigoLinha());
 
-            Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
-
-            linhaSuper.setCategoriaLinha(categorias.get());
-
             linhaSuper = this.iLinhaRepository.save(linhaSuper);
-
             return LinhaDTO.of(linhaSuper);
         }
 

@@ -1,4 +1,4 @@
-package br.com.hbsis.linha;
+package br.com.hbsis.produtos;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ILinhaRepository  extends JpaRepository<Linha, Long> {
+public interface IProdutosRepository extends  JpaRepository<Produtos, Long>{
+
 
 }

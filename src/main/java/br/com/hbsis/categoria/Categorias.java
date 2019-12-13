@@ -18,7 +18,7 @@ public class Categorias {
     @JoinColumn (name = "id_fornecedor", referencedColumnName="id")
     private Fornecedor fornecedorCategoria;
 
-    @Column(name = "nome_categoria", unique = true,  length = 50)
+    @Column(name = "nome_categoria",  length = 50)
     private String nomeCategoria;
 
     public Long getId() {
