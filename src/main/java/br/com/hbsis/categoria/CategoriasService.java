@@ -162,16 +162,7 @@ public class CategoriasService {
             myWriter.append("\n" +categorias.getCodigoCategoria()+ ";");
             myWriter.append(categorias.getNomeCategoria() + ";");
             myWriter.append(categorias.getFornecedorCategoria().getRazaoSocial()+ ";");
-
-            String doisPrimeiros = categorias.getFornecedorCategoria().getCnpj().substring(0,2);
-            String tresSegundos= categorias.getFornecedorCategoria().getCnpj().substring(2,5);
-            String tresTerceiros = categorias.getFornecedorCategoria().getCnpj().substring(5,8);
-            String penultimosQartos = categorias.getFornecedorCategoria().getCnpj().substring(8,12);
-            String ultimosDois = categorias.getFornecedorCategoria().getCnpj().substring(12,14);
-            String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
-                    penultimosQartos + "-" + ultimosDois;
-
-            myWriter.append(cnpjDisfarcado);
+            myWriter.append(categorias.getFornecedorCategoria().getCnpj());
 
 
             myWriter.flush();

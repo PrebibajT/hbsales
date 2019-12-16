@@ -191,7 +191,44 @@ public class ProdutosService {
         this.iProdutosRepository.deleteById(id);
     }
 
+    public void exportar(HttpServletResponse response) throws IOException {
+
+        response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
+        response.setContentType("text/csv");
+        List<Produtos> express = iProdutosRepository.findAll();
+
+        PrintWriter miEscritor = response.getWriter();
+
+        miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";" + "Validade" +
+        ";" + "Código linha" + ";" + "Nome linha"+ ";" + "Código categoria"+ ";" + "Nome categoria"+ ";" + "CNPJ fornecedor"
+        + ";" + "Razão social");
+
+        for (Produtos produtos : express) {
+
+            miEscritor.append("\n" + produtos.getCodigoProduto() + ";");
+            miEscritor.append(produtos.getNomeProduto() + ";");
+            miEscritor.append(produtos.getPreco() + ";");
+            miEscritor.append(produtos.getUnidadeCaixa() + ";");
+            miEscritor.append(produtos.getValidade() + ";");
+            miEscritor.append(produtos.getLinhaCategoria().getCodigoLinha() + ";");
+            miEscritor.append(produtos.getLinhaCategoria().getNome() + ";");
+            miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getCodigoCategoria() + ";");
+            miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getNomeCategoria() + ";");
+            miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj() + ";");
+            miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getRazaoSocial());
+
+            miEscritor.flush();
+
+        }
+
+    }
+
+    public void importar(MultipartFile file) throws IOException {
 
 
+
+
+
+    }
 
 }

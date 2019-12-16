@@ -44,4 +44,20 @@ public class ProdutosRest {
         this.produtosService.delete(id);
     }
 
+    @GetMapping("/exportar")
+    public void exportar(HttpServletResponse response) throws Exception{
+
+        LOGGER.info("Exportando categorias");
+
+        this.produtosService.exportar(response);
+
+    }
+
+    @GetMapping("/importar")
+    public void importar(@RequestParam("file") MultipartFile file) throws Exception {
+        LOGGER.info("Importando categorias");
+
+        this.produtosService.importar(file);
+    }
+
 }

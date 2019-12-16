@@ -31,6 +31,19 @@ public class FornecedorService {
 
         Fornecedor fornecedor  = new Fornecedor();
         fornecedor.setCnpj(fornecedorDTO.getCnpj());
+
+        String doisPrimeiros = fornecedor.getCnpj().substring(0,2);
+        String tresSegundos= fornecedor.getCnpj().substring(2,5);
+        String tresTerceiros = fornecedor.getCnpj().substring(5,8);
+        String penultimosQartos = fornecedor.getCnpj().substring(8,12);
+        String ultimosDois = fornecedor.getCnpj().substring(12,14);
+        String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
+                penultimosQartos + "-" + ultimosDois;
+
+        fornecedor.setCnpj(cnpjDisfarcado);
+
+
+
         fornecedor.setNomeFantasia(fornecedorDTO.getNome_fantasia());
         fornecedor.setEmail(fornecedorDTO.getEmail());
         fornecedor.setEndereco(fornecedorDTO.getEndereco());
@@ -55,7 +68,11 @@ public class FornecedorService {
         }
 
         if (fornecedorDTO.getCnpj().length() != 14){
-            throw new IllegalArgumentException("CNPJ não deve ter menos/mais de 14 numeros ");
+
+             if (fornecedorDTO.getCnpj().length() != 18){
+                 throw new IllegalArgumentException("CNPJ não deve ter menos/mais de 14 numeros ");
+
+            }
 
         }
 

@@ -15,7 +15,7 @@ public class Fornecedor {
 
     @Column(name = "nome_fantasia", unique = true, nullable = false, length = 255)
     private String nomeFantasia;
-    @Column(name = "cnpj", nullable = false, unique = true, length = 16)
+    @Column(name = "cnpj", nullable = false, unique = true, length = 18)
     private String cnpj;
     @Column(name = "razao_social", unique = true, length = 155)
     private String razaoSocial;
