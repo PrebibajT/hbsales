@@ -1,6 +1,6 @@
 package br.com.hbsis.produtos;
 
-import br.com.hbsis.linha.ILinhaRepository;
+
 import br.com.hbsis.linha.Linha;
 import br.com.hbsis.linha.LinhaService;
 
@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +24,12 @@ public class ProdutosService {
 
     private final IProdutosRepository iProdutosRepository;
     private final LinhaService linhaService;
-    private  final ILinhaRepository iLinhaRepository;
 
-    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, ILinhaRepository iLinhaRepository) {
+
+    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService) {
         this.iProdutosRepository = iProdutosRepository;
         this.linhaService = linhaService;
-        this.iLinhaRepository = iLinhaRepository;
+
     }
 
     public ProdutosDTO save(ProdutosDTO produtosDTO) {
@@ -43,7 +44,7 @@ public class ProdutosService {
         produtos.setCodigoProduto(produtosDTO.getCodigoProduto().toUpperCase());
         StringBuilder produtationConcatenation = new StringBuilder();
 
-        if(produtosDTO.getCodigoProduto().length() != 10){
+        if (produtosDTO.getCodigoProduto().length() != 10) {
             int cata = 10 - produtosDTO.getCodigoProduto().length();
 
             for (int i = 0; i < cata; i++) {
@@ -61,7 +62,7 @@ public class ProdutosService {
 
         }
 
-     Optional<Linha> linha = this.linhaService.findByCodigoLinha(produtosDTO.getIdLinha());
+        Optional<Linha> linha = this.linhaService.findByCodigoLinha(produtosDTO.getIdLinha());
 
         produtos.setLinhaCategoria(linha.get());
 
@@ -85,7 +86,7 @@ public class ProdutosService {
         produtos = this.iProdutosRepository.save(produtos);
 
         return ProdutosDTO.of(produtos);
-        
+
     }
 
     private void validate(ProdutosDTO produtosDTO) {
@@ -127,25 +128,25 @@ public class ProdutosService {
             throw new IllegalArgumentException("O peso da medida do produto ta nulo, seu burro");
 
 
-        }else if (produtosDTO.getPesoMedida().equals("mg")) {
+        } else if (produtosDTO.getPesoMedida().equals("mg")) {
 
 
-        }else  if (produtosDTO.getPesoMedida().equals("g")) {
+        } else if (produtosDTO.getPesoMedida().equals("g")) {
 
 
-        }else if (produtosDTO.getPesoMedida().equals("Kg")){
+        } else if (produtosDTO.getPesoMedida().equals("Kg")) {
 
 
-        }else {
+        } else {
             throw new IllegalArgumentException("O peso da medida do produto não vai aceitar isso, seu fudido");
         }
     }
 
-    public ProdutosDTO update(ProdutosDTO produtosDTO, Long id){
-        Optional <Produtos> produtosOptional = this.iProdutosRepository.findById(id);
+    public ProdutosDTO update(ProdutosDTO produtosDTO, Long id) {
+        Optional<Produtos> produtosOptional = this.iProdutosRepository.findById(id);
 
-        if(produtosOptional.isPresent()){
-         Produtos produtosSuper = produtosOptional.get();
+        if (produtosOptional.isPresent()) {
+            Produtos produtosSuper = produtosOptional.get();
 
             LOGGER.info("Atualizando produtos.... id:[{}]", produtosSuper.getCodigoProduto());
             LOGGER.debug("Payload: {}", produtosDTO);
@@ -176,7 +177,6 @@ public class ProdutosService {
             produtosSuper.setCodigoProduto(produtosDTO.getCodigoProduto());
 
 
-
             produtosSuper = this.iProdutosRepository.save(produtosSuper);
             return ProdutosDTO.of(produtosSuper);
 
@@ -200,8 +200,8 @@ public class ProdutosService {
         PrintWriter miEscritor = response.getWriter();
 
         miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";" + "Validade" +
-        ";" + "Código linha" + ";" + "Nome linha"+ ";" + "Código categoria"+ ";" + "Nome categoria"+ ";" + "CNPJ fornecedor"
-        + ";" + "Razão social");
+                ";" + "Código linha" + ";" + "Nome linha" + ";" + "Código categoria" + ";" + "Nome categoria" + ";" + "CNPJ fornecedor"
+                + ";" + "Razão social");
 
         for (Produtos produtos : express) {
 
@@ -223,12 +223,61 @@ public class ProdutosService {
 
     }
 
-    public void importar(MultipartFile file) throws IOException {
-
-
-
-
-
-    }
+//    public void importar(MultipartFile file) throws IOException {
+//
+//        //    /-----------------------Produtos---------------------------\         /-------Linha-------\    \\
+//        //  Codigo produto || Nome || Preço || Unidades de caixa || Validade ||| Código linha || Nome linha  \\
+//
+//        Produtos produtos = new Produtos();
+//
+//        BufferedReader miLector = new BufferedReader(new InputStreamReader(file.getInputStream()));
+//
+//        String line = "";
+//        String splitBy = ";";
+//
+//        line = miLector.readLine();
+//        while ((line = miLector.readLine()) != null) {
+//            String[] produto = line.split(splitBy);
+//
+//          //  final String format(Date pr)
+//
+//
+//                    // EM PROGRESSO    .setCodigoLinha(produto[5]);   .setNome(produto[6]);
+//            //não azedou
+//            produtos.setCodigoProduto(produto[0]);
+//            produtos.setNomeProduto(produto[1]);
+//            produtos.setPreco(Double.parseDouble(produto[2]));
+//            produtos.setUnidadeCaixa(Integer.parseInt(produto[3]));
+//
+//     //erro   faz uma substring pro inteliJ ler na ordem q ele aceita
+//
+//         String data = produto[4];
+//
+//      //   data.substring()
+//
+//
+//       //     produtos.setValidade(produto[4]);
+//
+//
+//
+//            Long usaEsse = Long.parseLong(produto[5]);
+//
+//
+//            Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
+//
+//
+//           if(linha.isPresent()){
+//
+//            produtos.setLinhaCategoria(linha.get());
+//            produtos.getLinhaCategoria().setNome(produto[6]);
+//
+//           }
+//
+//
+//
+//
+//        }
+//
+//    }
 
 }

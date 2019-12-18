@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ILinhaRepository  extends JpaRepository<Linha, Long> {
+interface ILinhaRepository  extends JpaRepository<Linha, Long> {
 
 }

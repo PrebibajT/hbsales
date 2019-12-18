@@ -53,11 +53,11 @@ public class ProdutosRest {
 
     }
 
-    @GetMapping("/importar")
-    public void importar(@RequestParam("file") MultipartFile file) throws Exception {
-        LOGGER.info("Importando categorias");
-
-        this.produtosService.importar(file);
-    }
+//    @GetMapping("/importar")
+//    public void importar(@RequestParam("file") MultipartFile file) throws Exception {
+//        LOGGER.info("Importando categorias");
+//
+//        this.produtosService.importar(file);
+//    }
 
 }

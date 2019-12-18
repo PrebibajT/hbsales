@@ -40,13 +40,22 @@ public class CategoriasService {
 
         categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
 
-        if(categoriasDTO.getCodigoCategoria().length() < 3 ){
-            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
+
+       if(categoriasDTO.getCodigoCategoria().length() == 3 ){
+            String minhaVariavelConcatenada = categoriasDTO.getCodigoCategoria();
             categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
         }
-        if(categoriasDTO.getCodigoCategoria().length() < 2 ){
+        else if (categoriasDTO.getCodigoCategoria().length() == 2 ){
             String minhaVariavelConcatenada = "0" + categoriasDTO.getCodigoCategoria();
             categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+
+        }
+        else if (categoriasDTO.getCodigoCategoria().length() == 1 ){
+            String minhaVariavelConcatenada ="0" + "0" +  categoriasDTO.getCodigoCategoria();
+            categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+
+        }else {
+          throw new IllegalArgumentException("O código da categoria não é para ser maior q 3, seu mongol");
 
         }
 
@@ -105,9 +114,13 @@ public class CategoriasService {
 
     public String reValidate (Fornecedor fornecedor, CategoriasDTO categoriasDTO){
 
-     String subCNPJ= fornecedor.getCnpj().substring(10,14);
+     String subCNPJ= fornecedor.getCnpj();
 
-      String codigoCompleto = "CAT" + subCNPJ + categoriasDTO.getCodigoCategoria();
+
+        String restinhoSemMascara = subCNPJ.substring(13,15) +subCNPJ.substring(16,18) ;
+
+
+      String codigoCompleto = "CAT" + restinhoSemMascara + categoriasDTO.getCodigoCategoria();
 
         return codigoCompleto;
 
@@ -154,7 +167,6 @@ public class CategoriasService {
 
         PrintWriter myWriter = response.getWriter();
 
-
         myWriter.append("Codigo" + ";" + "Nome" +";" + "Razão social" + ";" + "CNPJ");
 
         for (Categorias categorias : express) {
@@ -194,6 +206,7 @@ public class CategoriasService {
             categorias.setFornecedorCategoria(fornecedor.get());
 
             this.iCategoriasRepository.save(categorias);
+
 
         }
     }

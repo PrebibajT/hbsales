@@ -3,7 +3,6 @@ package br.com.hbsis.linha;
 import br.com.hbsis.categoria.Categorias;
 import br.com.hbsis.categoria.CategoriasService;
 
-import br.com.hbsis.categoria.ICategoriasRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +21,12 @@ public class LinhaService {
 
     private final ILinhaRepository iLinhaRepository;
     private final CategoriasService categoriasService;
-    private final ICategoriasRepository iCategoriasRepository;
 
-    public LinhaService(ILinhaRepository ilinhaRepository, CategoriasService categoriasService, ICategoriasRepository iCategoriasRepository) {
+
+    public LinhaService(ILinhaRepository ilinhaRepository, CategoriasService categoriasService) {
         this.iLinhaRepository = ilinhaRepository;
         this.categoriasService = categoriasService;
-        this.iCategoriasRepository = iCategoriasRepository;
+
     }
 
     public LinhaDTO save(LinhaDTO linhaDTO) {
@@ -183,15 +182,13 @@ public class LinhaService {
 
             linha.setCodigoLinha(linhas[0]);
             linha.setNome(linhas[1]);
-            Long idsinhio = linha.getId();
 
-
-            Optional<Categorias> categoriasOptional = iCategoriasRepository.findByCodigoCategoria(linhas[2]);
-            if (categoriasOptional.isPresent()) {
+            Categorias categoriasOptional = categoriasService.findByCodigoCategoria(linhas[2]);
+            if (categoriasOptional == null) {
 
                 Categorias byCodigoCategoria = this.categoriasService.findByCodigoCategoria(linhas[2]);
                 linha.setCategoriaLinha(byCodigoCategoria);
-                Long paraisoFiscal = categoriasOptional.get().getId();
+                Long paraisoFiscal = categoriasOptional.getId();
 
                 if (paraisoFiscal == null ){
                     throw new IllegalArgumentException(String.format("Não vai prestar contas para o paraíso fiscal?" +

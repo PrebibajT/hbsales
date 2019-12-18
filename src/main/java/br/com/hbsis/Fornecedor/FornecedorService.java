@@ -1,5 +1,6 @@
 package br.com.hbsis.Fornecedor;
 
+import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +123,7 @@ public class FornecedorService {
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
 
+
         if (fornecedorExistenteOptional.isPresent()) {
             Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
 
@@ -141,7 +143,6 @@ public class FornecedorService {
 
             return FornecedorDTO.of(fornecedorExistente);
         }
-
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
