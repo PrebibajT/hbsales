@@ -62,7 +62,7 @@ public class ProdutosService {
 
         }
 
-        Optional<Linha> linha = this.linhaService.findByCodigoLinha(produtosDTO.getIdLinha());
+        Optional<Linha> linha = this.linhaService.findByIdLinha(produtosDTO.getIdLinha());
 
         produtos.setLinhaCategoria(linha.get());
 
@@ -153,7 +153,7 @@ public class ProdutosService {
             LOGGER.debug("Produtos existente: {}", produtosSuper);
 
 
-            Optional<Linha> linha = this.linhaService.findByCodigoLinha(produtosDTO.getIdLinha());
+            Optional<Linha> linha = this.linhaService.findByIdLinha(produtosDTO.getIdLinha());
             produtosSuper.setLinhaCategoria(linha.get());
 
             produtosSuper.setNomeProduto(produtosDTO.getNomeProduto());
@@ -223,61 +223,60 @@ public class ProdutosService {
 
     }
 
-//    public void importar(MultipartFile file) throws IOException {
-//
-//        //    /-----------------------Produtos---------------------------\         /-------Linha-------\    \\
-//        //  Codigo produto || Nome || Preço || Unidades de caixa || Validade ||| Código linha || Nome linha  \\
-//
-//        Produtos produtos = new Produtos();
-//
-//        BufferedReader miLector = new BufferedReader(new InputStreamReader(file.getInputStream()));
-//
-//        String line = "";
-//        String splitBy = ";";
-//
-//        line = miLector.readLine();
-//        while ((line = miLector.readLine()) != null) {
-//            String[] produto = line.split(splitBy);
-//
-//          //  final String format(Date pr)
-//
-//
-//                    // EM PROGRESSO    .setCodigoLinha(produto[5]);   .setNome(produto[6]);
-//            //não azedou
-//            produtos.setCodigoProduto(produto[0]);
-//            produtos.setNomeProduto(produto[1]);
-//            produtos.setPreco(Double.parseDouble(produto[2]));
-//            produtos.setUnidadeCaixa(Integer.parseInt(produto[3]));
-//
-//     //erro   faz uma substring pro inteliJ ler na ordem q ele aceita
-//
-//         String data = produto[4];
-//
-//      //   data.substring()
-//
-//
-//       //     produtos.setValidade(produto[4]);
-//
-//
-//
-//            Long usaEsse = Long.parseLong(produto[5]);
-//
-//
-//            Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
-//
-//
-//           if(linha.isPresent()){
-//
-//            produtos.setLinhaCategoria(linha.get());
-//            produtos.getLinhaCategoria().setNome(produto[6]);
-//
-//           }
-//
-//
-//
-//
-//        }
-//
-//    }
+    public void importar(MultipartFile file) throws IOException {
+
+        //    /-----------------------Produtos---------------------------\         /-------Linha-------\    \\
+        //  Codigo produto || Nome || Preço || Unidades de caixa || Validade ||| Código linha || Nome linha  \\
+
+        Produtos produtos = new Produtos();
+
+        BufferedReader miLector = new BufferedReader(new InputStreamReader(file.getInputStream()));
+
+        String line = "";
+        String splitBy = ";";
+
+        line = miLector.readLine();
+        while ((line = miLector.readLine()) != null) {
+            String[] produto = line.split(splitBy);
+
+          //  final String format(Date pr)
+
+
+                    // EM PROGRESSO    .setCodigoLinha(produto[5]);   .setNome(produto[6]);
+            //não azedou
+            produtos.setCodigoProduto(produto[0]);
+            produtos.setNomeProduto(produto[1]);
+            produtos.setPreco(Double.parseDouble(produto[2]));
+            produtos.setUnidadeCaixa(Integer.parseInt(produto[3]));
+
+     //erro   faz uma substring pro inteliJ ler na ordem q ele aceita
+
+         String data = produto[4];  //      09/02/2020 para 2020-02-09
+
+           String dataDoida = data.substring(6,10) + "-" +
+                                    data.substring(3,5) + "-" +
+                                     data.substring(0,2);
+
+
+            produtos.setValidade(LocalDate.parse(dataDoida));
+
+            String usaEsse = (produto[5]);
+
+
+            Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
+
+
+           if(linha.isPresent()){
+
+            produtos.setLinhaCategoria(linha.get());
+            produtos.getLinhaCategoria().setNome(produto[6]);
+
+           }
+
+
+
+        }
+
+    }
 
 }

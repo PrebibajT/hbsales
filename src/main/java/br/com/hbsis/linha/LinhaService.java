@@ -106,8 +106,11 @@ public class LinhaService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-    public Optional <Linha> findByCodigoLinha(Long codigoLinha) {
-        Optional<Linha> linhaOptional = this.iLinhaRepository.findById(codigoLinha);
+
+
+
+    public Optional <Linha> findByCodigoLinha(String codigoLinha) {
+        Optional<Linha> linhaOptional = this.iLinhaRepository.findByCodigoLinha(codigoLinha);
 
         if (linhaOptional.isPresent()) {
             return linhaOptional;
@@ -115,6 +118,21 @@ public class LinhaService {
 
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", codigoLinha));
     }
+
+    public Optional <Linha> findByIdLinha(Long idLinha) {
+        Optional<Linha> linhaOptionale = this.iLinhaRepository.findById(idLinha);
+
+        if (linhaOptionale.isPresent()) {
+            return linhaOptionale;
+        }
+
+        throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", idLinha));
+    }
+
+
+
+
+
 
     public LinhaDTO update(LinhaDTO linhaDTO, Long id) {
         Optional<Linha> linhaSuperOptional = this.iLinhaRepository.findById(id);
