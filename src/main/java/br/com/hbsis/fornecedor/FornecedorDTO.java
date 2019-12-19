@@ -1,4 +1,4 @@
-package br.com.hbsis.Fornecedor;
+package br.com.hbsis.fornecedor;
 
 /**
  * Classe para tráfego das informações do usuário

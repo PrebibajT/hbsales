@@ -1,4 +1,4 @@
-package br.com.hbsis.Fornecedor;
+package br.com.hbsis.fornecedor;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

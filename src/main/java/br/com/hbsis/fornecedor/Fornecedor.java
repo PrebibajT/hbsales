@@ -1,4 +1,4 @@
-package br.com.hbsis.Fornecedor;
+package br.com.hbsis.fornecedor;
 
 import javax.persistence.*;
 

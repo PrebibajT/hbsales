@@ -1,6 +1,6 @@
 package br.com.hbsis.categoria;
 
-import br.com.hbsis.Fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.Fornecedor;
 import javax.persistence.*;
 
 @Entity

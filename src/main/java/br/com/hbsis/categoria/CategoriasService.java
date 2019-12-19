@@ -1,11 +1,9 @@
 package br.com.hbsis.categoria;
 
-import br.com.hbsis.Fornecedor.Fornecedor;
-import br.com.hbsis.Fornecedor.FornecedorDTO;
-import br.com.hbsis.Fornecedor.FornecedorService;
+import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorService;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.br.CNPJ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

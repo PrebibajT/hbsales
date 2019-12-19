@@ -1,4 +1,4 @@
-package br.com.hbsis.Fornecedor;
+package br.com.hbsis.fornecedor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

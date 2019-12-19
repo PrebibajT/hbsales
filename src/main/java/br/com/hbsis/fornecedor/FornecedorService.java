@@ -1,6 +1,5 @@
-package br.com.hbsis.Fornecedor;
+package br.com.hbsis.fornecedor;
 
-import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
