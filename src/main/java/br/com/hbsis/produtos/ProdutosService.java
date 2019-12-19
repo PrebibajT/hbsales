@@ -142,6 +142,14 @@ public class ProdutosService {
         }
     }
 
+    public Optional <Produtos> findByCodigoProduto(String CodigoProduto) {
+        Optional<Produtos> produtosOptional = this.iProdutosRepository.findByCodigoProduto(CodigoProduto);
+
+        if (produtosOptional.isPresent()) {
+            return produtosOptional;
+        }
+    throw new IllegalArgumentException("nada de código");
+    }
     public ProdutosDTO update(ProdutosDTO produtosDTO, Long id) {
         Optional<Produtos> produtosOptional = this.iProdutosRepository.findById(id);
 
@@ -191,6 +199,8 @@ public class ProdutosService {
         this.iProdutosRepository.deleteById(id);
     }
 
+
+
     public void exportar(HttpServletResponse response) throws IOException {
 
         response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
@@ -199,7 +209,7 @@ public class ProdutosService {
 
         PrintWriter miEscritor = response.getWriter();
 
-        miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";" + "Validade" +
+        miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";"+ "Peso por unidade" + ";" + "Validade" +
                 ";" + "Código linha" + ";" + "Nome linha" + ";" + "Código categoria" + ";" + "Nome categoria" + ";" + "CNPJ fornecedor"
                 + ";" + "Razão social");
 
@@ -209,6 +219,7 @@ public class ProdutosService {
             miEscritor.append(produtos.getNomeProduto() + ";");
             miEscritor.append(produtos.getPreco() + ";");
             miEscritor.append(produtos.getUnidadeCaixa() + ";");
+            miEscritor.append(produtos.getPesoUnidade() + produtos.getPesoMedida()  + ";");
             miEscritor.append(produtos.getValidade() + ";");
             miEscritor.append(produtos.getLinhaCategoria().getCodigoLinha() + ";");
             miEscritor.append(produtos.getLinhaCategoria().getNome() + ";");
@@ -239,39 +250,44 @@ public class ProdutosService {
         while ((line = miLector.readLine()) != null) {
             String[] produto = line.split(splitBy);
 
-          //  final String format(Date pr)
-
-
-                    // EM PROGRESSO    .setCodigoLinha(produto[5]);   .setNome(produto[6]);
             //não azedou
             produtos.setCodigoProduto(produto[0]);
             produtos.setNomeProduto(produto[1]);
             produtos.setPreco(Double.parseDouble(produto[2]));
             produtos.setUnidadeCaixa(Integer.parseInt(produto[3]));
 
-     //erro   faz uma substring pro inteliJ ler na ordem q ele aceita
-
-         String data = produto[4];  //      09/02/2020 para 2020-02-09
-
-           String dataDoida = data.substring(6,10) + "-" +
-                                    data.substring(3,5) + "-" +
-                                     data.substring(0,2);
 
 
-            produtos.setValidade(LocalDate.parse(dataDoida));
+          String medida = produto[4].replaceAll("[0-9.]", "");
+          String peso = produto[4].replaceAll("[^\\d.]", "");
 
-            String usaEsse = (produto[5]);
+          produtos.setPesoMedida(medida);
+          produtos.setPesoUnidade(Double.parseDouble(peso));
+
+
+             String data = produto[5];//  09/02/2020
+
+
+            produtos.setValidade(LocalDate.parse(data));
+
+            String usaEsse = (produto[6]);
 
 
             Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
 
+            produtos.setLinhaCategoria(linha.get());
+
 
            if(linha.isPresent()){
 
-            produtos.setLinhaCategoria(linha.get());
-            produtos.getLinhaCategoria().setNome(produto[6]);
+            this.iProdutosRepository.save(produtos);
+               LOGGER.info("Tudo ok mestre");
 
            }
+           else {
+
+            throw new IllegalArgumentException("Azedo mestre");
+        }
 
 
 
