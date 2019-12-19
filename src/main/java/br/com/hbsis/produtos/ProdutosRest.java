@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/Produtos")
+@RequestMapping("/produtos")
 public class ProdutosRest {
 
     private static  final Logger LOGGER = LoggerFactory.getLogger(ProdutosRest.class);

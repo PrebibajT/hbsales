@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/Categorias")
+@RequestMapping("/categorias")
 public class CategoriasRest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CategoriasRest.class);
 
