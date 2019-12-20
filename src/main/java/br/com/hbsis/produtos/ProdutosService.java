@@ -1,6 +1,9 @@
 package br.com.hbsis.produtos;
 
 
+import br.com.hbsis.categoria.Categorias;
+import br.com.hbsis.categoria.CategoriasDTO;
+import br.com.hbsis.categoria.CategoriasService;
 import br.com.hbsis.linha.Linha;
 import br.com.hbsis.linha.LinhaService;
 
@@ -26,9 +29,11 @@ public class ProdutosService {
     private final LinhaService linhaService;
 
 
+
     public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService) {
         this.iProdutosRepository = iProdutosRepository;
         this.linhaService = linhaService;
+
 
     }
 
@@ -54,35 +59,19 @@ public class ProdutosService {
             }
 
             String concatenationProdutation = produtationConcatenation.toString() + produtosDTO.getCodigoProduto();
-
             concatenationProdutation = concatenationProdutation.toUpperCase();
-
             produtos.setCodigoProduto(concatenationProdutation);
-
-
         }
 
         Optional<Linha> linha = this.linhaService.findByIdLinha(produtosDTO.getIdLinha());
 
         produtos.setLinhaCategoria(linha.get());
-
         produtos.setNomeProduto(produtosDTO.getNomeProduto());
-
-
         produtos.setPesoMedida(produtosDTO.getPesoMedida());
-
-
         produtos.setPesoUnidade(produtosDTO.getPesoUnidade());
-
-
         produtos.setPreco(produtosDTO.getPreco());
-
-
         produtos.setUnidadeCaixa(produtosDTO.getUnidadeCaixa());
-
-
         produtos.setValidade(produtosDTO.getValidade());
-
         produtos = this.iProdutosRepository.save(produtos);
 
         return ProdutosDTO.of(produtos);
@@ -150,6 +139,8 @@ public class ProdutosService {
         }
     throw new IllegalArgumentException("nada de código");
     }
+
+
     public ProdutosDTO update(ProdutosDTO produtosDTO, Long id) {
         Optional<Produtos> produtosOptional = this.iProdutosRepository.findById(id);
 
@@ -162,28 +153,15 @@ public class ProdutosService {
 
 
             Optional<Linha> linha = this.linhaService.findByIdLinha(produtosDTO.getIdLinha());
+
             produtosSuper.setLinhaCategoria(linha.get());
-
             produtosSuper.setNomeProduto(produtosDTO.getNomeProduto());
-
-
             produtosSuper.setPesoMedida(produtosDTO.getPesoMedida());
-
-
             produtosSuper.setPesoUnidade(produtosDTO.getPesoUnidade());
-
-
             produtosSuper.setPreco(produtosDTO.getPreco());
-
-
             produtosSuper.setUnidadeCaixa(produtosDTO.getUnidadeCaixa());
-
-
             produtosSuper.setValidade(produtosDTO.getValidade());
-
-
             produtosSuper.setCodigoProduto(produtosDTO.getCodigoProduto());
-
 
             produtosSuper = this.iProdutosRepository.save(produtosSuper);
             return ProdutosDTO.of(produtosSuper);
@@ -256,40 +234,39 @@ public class ProdutosService {
             produtos.setPreco(Double.parseDouble(produto[2]));
             produtos.setUnidadeCaixa(Integer.parseInt(produto[3]));
 
-
-
-          String medida = produto[4].replaceAll("[0-9.]", "");
-          String peso = produto[4].replaceAll("[^\\d.]", "");
-
-          produtos.setPesoMedida(medida);
-          produtos.setPesoUnidade(Double.parseDouble(peso));
-
-
+             String medida = produto[4].replaceAll("[0-9.]", "");
+             String peso = produto[4].replaceAll("[^\\d.]", "");
              String data = produto[5];//  09/02/2020
+             String usaEsse = (produto[6]);
+
+             Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
+             Optional <Produtos> produtinhos = this.iProdutosRepository.findByCodigoProduto(produto[0]);
+
+              produtos.setPesoMedida(medida);
+              produtos.setPesoUnidade(Double.parseDouble(peso));
+              produtos.setValidade(LocalDate.parse(data));
+              produtos.setLinhaCategoria(linha.get());
 
 
-            produtos.setValidade(LocalDate.parse(data));
+                    if(linha.isPresent()) {
 
-            String usaEsse = (produto[6]);
+                            if (produtinhos.isPresent()) {
+                                  update(ProdutosDTO.of(produtos), produtos.getId());
 
+                                      //     if (CategoriasDTO == null)
+                            }
 
-            Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
+                                    else {
+                                        this.iProdutosRepository.save(produtos);
+                                        LOGGER.info("Tudo ok mestre, por enquanto");
 
-            produtos.setLinhaCategoria(linha.get());
+                                     }
 
+                    }
+                            else{
+                                throw new IllegalArgumentException("Azedo em mestre e não foi pouco");
 
-           if(linha.isPresent()){
-
-            this.iProdutosRepository.save(produtos);
-               LOGGER.info("Tudo ok mestre");
-
-           }
-           else {
-
-            throw new IllegalArgumentException("Azedo mestre");
-        }
-
-
+                            }
 
         }
 

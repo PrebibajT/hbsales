@@ -27,6 +27,7 @@ public class CategoriasService {
         this.fornecedorService = fornecedorService;
     }
 
+
     public CategoriasDTO save(CategoriasDTO categoriasDTO) {
 
         this.validate(categoriasDTO);
@@ -57,17 +58,16 @@ public class CategoriasService {
 
         }
 
-        categorias.setNomeCategoria(categoriasDTO.getNomeCategoria());
-
         Fornecedor byFornecedorId = fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
+
+        categorias.setNomeCategoria(categoriasDTO.getNomeCategoria());
         categorias.setFornecedorCategoria(byFornecedorId);
-
         categorias.setCodigoCategoria(this.reValidate(byFornecedorId, categoriasDTO));
-
         categorias = this.iCategoriasRepository.save(categorias);
 
         return CategoriasDTO.of(categorias);
     }
+
 
     public Categorias findByCodigoCategoria (String codigoCategoria){
             Optional<Categorias> codigoQTem = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
@@ -78,6 +78,7 @@ public class CategoriasService {
         }
         throw new IllegalArgumentException("O código da categoria não é para ser null, seu mongol");
     }
+
 
     private void validate(CategoriasDTO categoriasDTO) {
         LOGGER.info("Validando produtos");
@@ -112,13 +113,10 @@ public class CategoriasService {
 
     public String reValidate (Fornecedor fornecedor, CategoriasDTO categoriasDTO){
 
-     String subCNPJ= fornecedor.getCnpj();
+       String subCNPJ= fornecedor.getCnpj();
 
-
-        String restinhoSemMascara = subCNPJ.substring(13,15) +subCNPJ.substring(16,18) ;
-
-
-      String codigoCompleto = "CAT" + restinhoSemMascara + categoriasDTO.getCodigoCategoria();
+       String restinhoSemMascara = subCNPJ.substring(13,15) +subCNPJ.substring(16,18);
+       String codigoCompleto = "CAT" + restinhoSemMascara + categoriasDTO.getCodigoCategoria();
 
         return codigoCompleto;
 
@@ -135,11 +133,10 @@ public class CategoriasService {
             LOGGER.debug("Payload: {}", categoriasDTO);
             LOGGER.debug("Produtos existente: {}", categoriasExistente);
 
+
             categoriasExistente.setNomeCategoria(categoriasDTO.getNomeCategoria());
             categoriasExistente.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
-
             categoriasExistente.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
-
             categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);
             categoriasExistente.setCodigoCategoria(this.reValidate(categoriasExistente.getFornecedorCategoria(), categoriasDTO));
 
@@ -195,12 +192,13 @@ public class CategoriasService {
 
            categorias.setCodigoCategoria(categoria[0]);
            categorias.setNomeCategoria(categoria[1]);
-
             String cnpjMasked = categoria[3];
             String desmascaradoCnpj = cnpjMasked.substring(0,2) + cnpjMasked.substring(3,6) +cnpjMasked.substring(7,10) +
                                       cnpjMasked.substring(11,15) +cnpjMasked.substring(16,18) ;
 
             Optional<Fornecedor> fornecedor = this.fornecedorService.findByCnpj(desmascaradoCnpj);
+
+
             categorias.setFornecedorCategoria(fornecedor.get());
 
             this.iCategoriasRepository.save(categorias);

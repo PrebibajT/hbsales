@@ -61,14 +61,12 @@ public class LinhaService {
 
         }
 
-        linha.setNome(linhaDTO.getNome());
-
         Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
 
+        linha.setNome(linhaDTO.getNome());
         linha.setCategoriaLinha(categorias.get());
-
-
         linha = this.iLinhaRepository.save(linha);
+
         return LinhaDTO.of(linha);
 
     }
@@ -107,8 +105,6 @@ public class LinhaService {
     }
 
 
-
-
     public Optional <Linha> findByCodigoLinha(String codigoLinha) {
         Optional<Linha> linhaOptional = this.iLinhaRepository.findByCodigoLinha(codigoLinha);
 
@@ -119,6 +115,7 @@ public class LinhaService {
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", codigoLinha));
     }
 
+
     public Optional <Linha> findByIdLinha(Long idLinha) {
         Optional<Linha> linhaOptionale = this.iLinhaRepository.findById(idLinha);
 
@@ -128,10 +125,6 @@ public class LinhaService {
 
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", idLinha));
     }
-
-
-
-
 
 
     public LinhaDTO update(LinhaDTO linhaDTO, Long id) {
@@ -146,17 +139,18 @@ public class LinhaService {
 
 
             Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
-            linhaSuper.setCategoriaLinha(categorias.get());
 
+            linhaSuper.setCategoriaLinha(categorias.get());
             linhaSuper.setNome(linhaDTO.getNome());
             linhaSuper.setCodigoLinha(linhaDTO.getCodigoLinha());
-
             linhaSuper = this.iLinhaRepository.save(linhaSuper);
+
             return LinhaDTO.of(linhaSuper);
         }
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
+
 
     public void delete(Long id) {
         LOGGER.info("Executando delete para linha de ID: [{}]", id);
@@ -164,18 +158,18 @@ public class LinhaService {
         this.iLinhaRepository.deleteById(id);
     }
 
+
     public void exportar(HttpServletResponse response) throws IOException {
 
         response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
         response.setContentType("text/csv");
-        List<Linha> express = iLinhaRepository.findAll();
 
+        List<Linha> express = iLinhaRepository.findAll();
         PrintWriter myWriter = response.getWriter();
 
         myWriter.append("Codigo linha" + ";" + "Nome" + ";" + "Codigo categoria" + ";" + "Nome categoria");
 
         for (Linha linha : express) {
-
             myWriter.append("\n" + linha.getCodigoLinha() + ";");
             myWriter.append(linha.getNome() + ";");
             myWriter.append(linha.getCategoriaLinha().getCodigoCategoria() + ";");
@@ -196,6 +190,7 @@ public class LinhaService {
 
         line = meuLeitor.readLine();
         while ((line = meuLeitor.readLine()) != null) {
+
             String[] linhas = line.split(splitBy);
 
             linha.setCodigoLinha(linhas[0]);
@@ -208,19 +203,20 @@ public class LinhaService {
                 linha.setCategoriaLinha(byCodigoCategoria);
                 Long paraisoFiscal = categoriasOptional.getId();
 
-                if (paraisoFiscal == null ){
-                    throw new IllegalArgumentException(String.format("Não vai prestar contas para o paraíso fiscal?" +
-                            "que coisa feia em mestre"));
+                         if (paraisoFiscal == null ){
+                                 throw new IllegalArgumentException(String.format("Não vai prestar contas para o paraíso fiscal?" +
+                                    "que coisa feia em mestre"));
 
-                }
+                        }
 
-                linha.getCategoriaLinha().setId(paraisoFiscal);
-                this.iLinhaRepository.save(linha);
-                LOGGER.info("Tudo ok mestre");
+                            linha.getCategoriaLinha().setId(paraisoFiscal);
+                            this.iLinhaRepository.save(linha);
+                            LOGGER.info("Tudo ok mestre");
 
-            }else {
-                throw new IllegalArgumentException("Azedo mestre");
             }
+                        else {
+                         throw new IllegalArgumentException("Azedo mestre");
+                        }
 
         }
 

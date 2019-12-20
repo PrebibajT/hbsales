@@ -40,16 +40,13 @@ public class FornecedorService {
         String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
                 penultimosQartos + "-" + ultimosDois;
 
+
         fornecedor.setCnpj(cnpjDisfarcado);
-
-
-
         fornecedor.setNomeFantasia(fornecedorDTO.getNome_fantasia());
         fornecedor.setEmail(fornecedorDTO.getEmail());
         fornecedor.setEndereco(fornecedorDTO.getEndereco());
         fornecedor.setTelefone(fornecedorDTO.getTelefone());
         fornecedor.setRazaoSocial(fornecedorDTO.getRazao_social());
-
         fornecedor = this.iFornecedorRepository.save(fornecedor);
 
         return FornecedorDTO.of(fornecedor);
@@ -93,6 +90,7 @@ public class FornecedorService {
         }
     }
 
+
     public FornecedorDTO findById(Long id) {
         Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findById(id);
 
@@ -103,6 +101,7 @@ public class FornecedorService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
+
     public Fornecedor findByFornecedorId(Long id) {
         Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findById(id);
         if (fornecedorOptional.isPresent()) {
@@ -110,6 +109,7 @@ public class FornecedorService {
         }
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
+
 
     public  Optional<Fornecedor> findByCnpj(String CNPJ){
         Optional<Fornecedor> fornecedorSeeker = this.iFornecedorRepository.findByCnpj(CNPJ);
@@ -119,9 +119,9 @@ public class FornecedorService {
         throw new IllegalArgumentException(String.format("CNPJ %s não existe", CNPJ));
     }
 
+
     public FornecedorDTO update(FornecedorDTO fornecedorDTO, Long id) {
         Optional<Fornecedor> fornecedorExistenteOptional = this.iFornecedorRepository.findById(id);
-
 
         if (fornecedorExistenteOptional.isPresent()) {
             Fornecedor fornecedorExistente = fornecedorExistenteOptional.get();
@@ -152,15 +152,4 @@ public class FornecedorService {
         this.iFornecedorRepository.deleteById(id);
     }
 
-    public void exportar(){
-
-
-
-
-    }
-
-    public void importar(){
-
-
-    }
 }
