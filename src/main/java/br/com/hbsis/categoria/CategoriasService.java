@@ -3,6 +3,7 @@ package br.com.hbsis.categoria;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
 
+import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +70,11 @@ public class CategoriasService {
     }
 
 
-    public Categorias findByCodigoCategoria (String codigoCategoria){
+    public Optional <Categorias> findByCodigoCategoria (String codigoCategoria){
             Optional<Categorias> codigoQTem = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
 
         if (codigoQTem.isPresent()){
-            return codigoQTem.get();
+            return codigoQTem;
 
         }
         throw new IllegalArgumentException("O código da categoria não é para ser null, seu mongol");
@@ -101,10 +102,10 @@ public class CategoriasService {
 
 
     public Optional<Categorias> findByCategoriaId(Long id) {
-        Optional<Categorias> categoriasOptional = this.iCategoriasRepository.findById(id);
+        Optional<Categorias> categoriasOptionale = this.iCategoriasRepository.findById(id);
 
-        if (categoriasOptional.isPresent()) {
-            return categoriasOptional;
+        if (categoriasOptionale.isPresent()) {
+            return categoriasOptionale;
         }
 
         throw new IllegalArgumentException(String.format("id  %s não existe", id));

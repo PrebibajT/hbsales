@@ -4,7 +4,9 @@ package br.com.hbsis.produtos;
 import br.com.hbsis.categoria.Categorias;
 import br.com.hbsis.categoria.CategoriasDTO;
 import br.com.hbsis.categoria.CategoriasService;
+import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.linha.Linha;
+import br.com.hbsis.linha.LinhaDTO;
 import br.com.hbsis.linha.LinhaService;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.rmi.PortableRemoteObject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -27,13 +30,13 @@ public class ProdutosService {
 
     private final IProdutosRepository iProdutosRepository;
     private final LinhaService linhaService;
+    private final CategoriasService categoriasService;
 
 
-
-    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService) {
+    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService) {
         this.iProdutosRepository = iProdutosRepository;
         this.linhaService = linhaService;
-
+        this.categoriasService = categoriasService;
 
     }
 
@@ -131,13 +134,13 @@ public class ProdutosService {
         }
     }
 
-    public Optional <Produtos> findByCodigoProduto(String CodigoProduto) {
+    public Optional<Produtos> findByCodigoProduto(String CodigoProduto) {
         Optional<Produtos> produtosOptional = this.iProdutosRepository.findByCodigoProduto(CodigoProduto);
 
         if (produtosOptional.isPresent()) {
             return produtosOptional;
         }
-    throw new IllegalArgumentException("nada de código");
+        throw new IllegalArgumentException("nada de código");
     }
 
 
@@ -178,7 +181,6 @@ public class ProdutosService {
     }
 
 
-
     public void exportar(HttpServletResponse response) throws IOException {
 
         response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
@@ -187,7 +189,7 @@ public class ProdutosService {
 
         PrintWriter miEscritor = response.getWriter();
 
-        miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";"+ "Peso por unidade" + ";" + "Validade" +
+        miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";" + "Peso por unidade" + ";" + "Validade" +
                 ";" + "Código linha" + ";" + "Nome linha" + ";" + "Código categoria" + ";" + "Nome categoria" + ";" + "CNPJ fornecedor"
                 + ";" + "Razão social");
 
@@ -197,7 +199,7 @@ public class ProdutosService {
             miEscritor.append(produtos.getNomeProduto() + ";");
             miEscritor.append(produtos.getPreco() + ";");
             miEscritor.append(produtos.getUnidadeCaixa() + ";");
-            miEscritor.append(produtos.getPesoUnidade() + produtos.getPesoMedida()  + ";");
+            miEscritor.append(produtos.getPesoUnidade() + produtos.getPesoMedida() + ";");
             miEscritor.append(produtos.getValidade() + ";");
             miEscritor.append(produtos.getLinhaCategoria().getCodigoLinha() + ";");
             miEscritor.append(produtos.getLinhaCategoria().getNome() + ";");
@@ -234,42 +236,108 @@ public class ProdutosService {
             produtos.setPreco(Double.parseDouble(produto[2]));
             produtos.setUnidadeCaixa(Integer.parseInt(produto[3]));
 
-             String medida = produto[4].replaceAll("[0-9.]", "");
-             String peso = produto[4].replaceAll("[^\\d.]", "");
-             String data = produto[5];//  09/02/2020
-             String usaEsse = (produto[6]);
+            String medida = produto[4].replaceAll("[0-9.]", "");
+            String peso = produto[4].replaceAll("[^\\d.]", "");
+            String data = produto[5];//  09/02/2020
+            String usaEsse = (produto[6]);
 
-             Optional <Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
-             Optional <Produtos> produtinhos = this.iProdutosRepository.findByCodigoProduto(produto[0]);
+            Optional<Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
 
-              produtos.setPesoMedida(medida);
-              produtos.setPesoUnidade(Double.parseDouble(peso));
-              produtos.setValidade(LocalDate.parse(data));
-              produtos.setLinhaCategoria(linha.get());
+            produtos.setPesoMedida(medida);
+            produtos.setPesoUnidade(Double.parseDouble(peso));
+            produtos.setValidade(LocalDate.parse(data));
+            produtos.setLinhaCategoria(linha.get());
 
 
-                    if(linha.isPresent()) {
+            if (linha.isPresent()) {
 
-                            if (produtinhos.isPresent()) {
-                                  update(ProdutosDTO.of(produtos), produtos.getId());
+                this.iProdutosRepository.save(produtos);
+                LOGGER.info("Tudo ok mestre, por enquanto");
 
-                                      //     if (CategoriasDTO == null)
-                            }
+            }
+            else {
+                throw new IllegalArgumentException("Azedo em mestre e não foi pouco");
 
-                                    else {
-                                        this.iProdutosRepository.save(produtos);
-                                        LOGGER.info("Tudo ok mestre, por enquanto");
-
-                                     }
-
-                    }
-                            else{
-                                throw new IllegalArgumentException("Azedo em mestre e não foi pouco");
-
-                            }
+            }
 
         }
 
     }
 
+
+//    public void importarOmega(MultipartFile file, Long idFornecedor) throws IOException {
+//
+//        Produtos produtos = new Produtos();
+//        Linha linha = new Linha();
+//        Categorias categorias = new Categorias();
+//
+//        BufferedReader mioLettore = new BufferedReader(new InputStreamReader(file.getInputStream()));
+//
+//        String line = "";
+//        String splitBy = ";";
+//
+//        line = mioLettore.readLine();
+//        while ((line = mioLettore.readLine()) != null) {
+//            String[] produtoOMEGA = line.split(splitBy);
+//
+//
+//            Optional <Categorias> categoriasFornecedor = this.categoriasService.findByCodigoCategoria(produtoOMEGA[8]);
+//            if (!categoriasFornecedor.isPresent()){ //cria um novo
+//
+//            categorias.setCodigoCategoria(produtoOMEGA[8]);
+//            categorias.setNomeCategoria(produtoOMEGA[9]);
+//            categorias.getFornecedorCategoria().setId(idFornecedor);
+//
+//            this.categoriasService.save(CategoriasDTO.of(categorias));
+//
+//            } else {//update
+//
+//            this.categoriasService.update(CategoriasDTO.of(categorias), categorias.getId());
+//
+//            }
+//
+//            Optional <Linha> linhaFornecedor = this.linhaService.findByCodigoLinha(produtoOMEGA[0]);
+//            if(!linhaFornecedor.isPresent()){ //cria um novo
+//
+//            linha.setCodigoLinha(produtoOMEGA[6]);
+//            linha.setNome(produtoOMEGA[7]);
+//            linha.getCategoriaLinha().setId(categorias.getId());
+//
+//            this.linhaService.save(LinhaDTO.of(linha));
+//
+//            }else{//update
+//
+//            this.linhaService.update(LinhaDTO.of(linha), linha.getId());
+//
+//            }
+//
+//            Optional<Produtos> produtosFornecedor = this.iProdutosRepository.findByCodigoProduto(produtoOMEGA[0]);
+//            if(!produtosFornecedor.isPresent()){ //cria um novo
+//
+//                produtos.setCodigoProduto(produtoOMEGA[0]);
+//                produtos.setNomeProduto(produtoOMEGA[1]);
+//                produtos.setPreco(Double.parseDouble(produtoOMEGA[2]));
+//                produtos.setUnidadeCaixa(Integer.parseInt(produtoOMEGA[3]));
+//
+//                String medida = produtoOMEGA[4].replaceAll("[0-9.]", "");
+//                String peso = produtoOMEGA[4].replaceAll("[^\\d.]", "");
+//                String data = produtoOMEGA[5];//  09/02/2020
+//
+//                produtos.setPesoMedida(medida);
+//                produtos.setPesoUnidade(Double.parseDouble(peso));
+//                produtos.setValidade(LocalDate.parse(data));
+//                produtos.setLinhaCategoria(linhaFornecedor.get());
+//
+//                this.iProdutosRepository.save(produtos);
+//
+//            }else{//update
+//
+//                update(ProdutosDTO.of(produtos), produtos.getId());
+//
+//            }
+//
+//
+//        }
+//
+//    }
 }

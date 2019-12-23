@@ -39,7 +39,7 @@ public class ProdutosRest {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
-        LOGGER.info("Recebendo Delete para categorias de ID: {}", id);
+        LOGGER.info("Recebendo Delete para produtos de ID: {}", id);
 
         this.produtosService.delete(id);
     }
@@ -47,17 +47,24 @@ public class ProdutosRest {
     @GetMapping("/exportar")
     public void exportar(HttpServletResponse response) throws Exception{
 
-        LOGGER.info("Exportando categorias");
+        LOGGER.info("Exportando produtos");
 
         this.produtosService.exportar(response);
 
     }
 
-    @GetMapping("/importar")
+    @PostMapping("/importar")
     public void importar(@RequestParam("file") MultipartFile file) throws Exception {
-        LOGGER.info("Importando categorias");
+        LOGGER.info("Importando produtos");
 
         this.produtosService.importar(file);
-    }
+
+}
+//    @PostMapping("/importarOmega/{idFornecedor}")
+//    public void  importarOmega(@PathVariable("idFornecedor") Long idFornecedor, @RequestParam("file") MultipartFile file ) throws Exception {
+//        LOGGER.info("Importando produtos  O M E G A ");
+//
+//         this.produtosService.importarOmega(file, idFornecedor);
+//    }
 
 }

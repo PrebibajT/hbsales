@@ -122,7 +122,6 @@ public class LinhaService {
         if (linhaOptionale.isPresent()) {
             return linhaOptionale;
         }
-
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", idLinha));
     }
 
@@ -190,26 +189,18 @@ public class LinhaService {
 
         line = meuLeitor.readLine();
         while ((line = meuLeitor.readLine()) != null) {
-
             String[] linhas = line.split(splitBy);
 
             linha.setCodigoLinha(linhas[0]);
             linha.setNome(linhas[1]);
 
-            Categorias categoriasOptional = categoriasService.findByCodigoCategoria(linhas[2]);
-            if (categoriasOptional == null) {
+            String esseVai = linhas[2];
 
-                Categorias byCodigoCategoria = this.categoriasService.findByCodigoCategoria(linhas[2]);
-                linha.setCategoriaLinha(byCodigoCategoria);
-                Long paraisoFiscal = categoriasOptional.getId();
+           Optional <Categorias> categoriasOptional = categoriasService.findByCodigoCategoria(esseVai);
+            if (categoriasOptional.isPresent()) {
 
-                         if (paraisoFiscal == null ){
-                                 throw new IllegalArgumentException(String.format("Não vai prestar contas para o paraíso fiscal?" +
-                                    "que coisa feia em mestre"));
-
-                        }
-
-                            linha.getCategoriaLinha().setId(paraisoFiscal);
+                            linha.setCategoriaLinha(categoriasOptional.get());
+                            linha.getCategoriaLinha().setNomeCategoria(linhas[3]);
                             this.iLinhaRepository.save(linha);
                             LOGGER.info("Tudo ok mestre");
 
