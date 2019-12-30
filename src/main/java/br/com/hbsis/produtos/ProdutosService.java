@@ -5,6 +5,8 @@ import br.com.hbsis.categoria.Categorias;
 import br.com.hbsis.categoria.CategoriasDTO;
 import br.com.hbsis.categoria.CategoriasService;
 import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorDTO;
+import br.com.hbsis.fornecedor.FornecedorService;
 import br.com.hbsis.linha.Linha;
 import br.com.hbsis.linha.LinhaDTO;
 import br.com.hbsis.linha.LinhaService;
@@ -31,13 +33,14 @@ public class ProdutosService {
     private final IProdutosRepository iProdutosRepository;
     private final LinhaService linhaService;
     private final CategoriasService categoriasService;
+    private final FornecedorService fornecedorService;
 
 
-    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService) {
+    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService, FornecedorService fornecedorService) {
         this.iProdutosRepository = iProdutosRepository;
         this.linhaService = linhaService;
         this.categoriasService = categoriasService;
-
+        this.fornecedorService = fornecedorService;
     }
 
     public ProdutosDTO save(ProdutosDTO produtosDTO) {
@@ -134,13 +137,18 @@ public class ProdutosService {
         }
     }
 
-    public Optional<Produtos> findByCodigoProduto(String CodigoProduto) {
-        Optional<Produtos> produtosOptional = this.iProdutosRepository.findByCodigoProduto(CodigoProduto);
+    public Optional<Produtos> findByCodigoProduto(String codigoProduto) {
+        Optional<Produtos> productsOptional = this.iProdutosRepository.findByCodigoProduto(codigoProduto);
 
-        if (produtosOptional.isPresent()) {
-            return produtosOptional;
-        }
-        throw new IllegalArgumentException("nada de código");
+            return productsOptional;
+
+    }
+
+    public Produtos findByCodigoProdutos(String codigoProduto){
+        Optional <Produtos> produtosPeperoni = this.iProdutosRepository.findByCodigoProduto(codigoProduto);
+
+        return produtosPeperoni.get();
+
     }
 
 
@@ -241,7 +249,7 @@ public class ProdutosService {
             String data = produto[5];//  09/02/2020
             String usaEsse = (produto[6]);
 
-            Optional<Linha> linha = this.linhaService.findByCodigoLinha(usaEsse);
+            Optional<Linha> linha = linhaService.findByCodigoLinha(usaEsse);
 
             produtos.setPesoMedida(medida);
             produtos.setPesoUnidade(Double.parseDouble(peso));
@@ -265,79 +273,112 @@ public class ProdutosService {
     }
 
 
-//    public void importarOmega(MultipartFile file, Long idFornecedor) throws IOException {
+    public void importarOmega(MultipartFile file, Long idFornecedor) throws IOException {
+
+        ProdutosDTO produtosDTO = new ProdutosDTO();
+        LinhaDTO linhaDTO = new LinhaDTO();
+        CategoriasDTO categoriasDTO = new CategoriasDTO();
+
+        BufferedReader mioLettore = new BufferedReader(new InputStreamReader(file.getInputStream()));
+
+        String line = "";
+        String splitBy = ";";
+
+        line = mioLettore.readLine();
+
+        while ((line = mioLettore.readLine()) != null) {
+            String[] produtoOMEGA = line.split(splitBy);
+
+            Optional <Categorias> categoriasFornecedor = categoriasService.findByCodigoCategoria(produtoOMEGA[8]);
+            Optional <Linha> linhaFornecedor = linhaService.findByCodigoLinha(produtoOMEGA[6]);
+            Optional <Produtos> produtosFornecedor = this.iProdutosRepository.findByCodigoProduto(produtoOMEGA[0]);
+
+                if (!categoriasFornecedor.isPresent()) { //cria um novo
+                    LOGGER.info("criando nova categoria ");
+
+                    categoriasDTO.setCodigoCategoria(produtoOMEGA[8]);
+                    categoriasDTO.setNomeCategoria(produtoOMEGA[9]);
+                    categoriasDTO.setIdFornecedor(idFornecedor);
+
+                    categoriasService.save(categoriasDTO);
+
+                } else  {//update
+                    LOGGER.info("atualizando categoria já existente ");
+
+                    Long idCat = categoriasService.findByCodigoCategorias(produtoOMEGA[8]).getId();
+
+                    categoriasDTO.setCodigoCategoria(produtoOMEGA[8]);
+
+                    LOGGER.info("criando nova linha ");
+
+                    categoriasDTO.setNomeCategoria(produtoOMEGA[9]);
+                    categoriasDTO.setIdFornecedor(idFornecedor);
+                    categoriasDTO.setId(idCat);
+
+                    categoriasService.update( categoriasDTO, idCat);
+
+                }
+
+
+                // ERRO AQ
+                if (!linhaFornecedor.isPresent()) { //cria um novo
+                    LOGGER.info("criando nova linha ");
+
+                    Long idCat = categoriasService.findByCodigoCategorias(produtoOMEGA[8]).getId();
+
+                    linhaDTO.setCodigoLinha(produtoOMEGA[6]);
+                    linhaDTO.setNome(produtoOMEGA[7]);
+                    linhaDTO.setIdCategoria(idCat);
+
+                    linhaService.save(linhaDTO);
+
+
+                } else {//update
+                    LOGGER.info("atualizando linha já existente ");
+
+                    Long idLin = linhaService.findByCodigoLinhas(produtoOMEGA[6]).getId();
+                    Long idCat = categoriasService.findByCodigoCategorias(produtoOMEGA[8]).getId();
+
+                    linhaDTO.setCodigoLinha(produtoOMEGA[6]);
+                    linhaDTO.setNome(produtoOMEGA[7]);
+                    linhaDTO.setIdCategoria(idCat);
+
+                    linhaService.update(linhaDTO, idLin);
+
+                }
+
+
+//                if (!produtosFornecedor.isPresent()) { //cria um novo
 //
-//        Produtos produtos = new Produtos();
-//        Linha linha = new Linha();
-//        Categorias categorias = new Categorias();
+//                    LOGGER.info("criando nova produtos ");
+//                    produtosDTO.setCodigoProduto(produtoOMEGA[0]);
+//                    produtosDTO.setNomeProduto(produtoOMEGA[1]);
+//                    produtosDTO.setPreco(Double.parseDouble(produtoOMEGA[2]));
+//                    produtosDTO.setUnidadeCaixa(Integer.parseInt(produtoOMEGA[3]));
 //
-//        BufferedReader mioLettore = new BufferedReader(new InputStreamReader(file.getInputStream()));
+//                    String medida = produtoOMEGA[4].replaceAll("[0-9.]", "");
+//                    String peso = produtoOMEGA[4].replaceAll("[^\\d.]", "");
+//                    String data = produtoOMEGA[5];//  09/02/2020
 //
-//        String line = "";
-//        String splitBy = ";";
-//
-//        line = mioLettore.readLine();
-//        while ((line = mioLettore.readLine()) != null) {
-//            String[] produtoOMEGA = line.split(splitBy);
-//
-//
-//            Optional <Categorias> categoriasFornecedor = this.categoriasService.findByCodigoCategoria(produtoOMEGA[8]);
-//            if (!categoriasFornecedor.isPresent()){ //cria um novo
-//
-//            categorias.setCodigoCategoria(produtoOMEGA[8]);
-//            categorias.setNomeCategoria(produtoOMEGA[9]);
-//            categorias.getFornecedorCategoria().setId(idFornecedor);
-//
-//            this.categoriasService.save(CategoriasDTO.of(categorias));
-//
-//            } else {//update
-//
-//            this.categoriasService.update(CategoriasDTO.of(categorias), categorias.getId());
-//
-//            }
-//
-//            Optional <Linha> linhaFornecedor = this.linhaService.findByCodigoLinha(produtoOMEGA[0]);
-//            if(!linhaFornecedor.isPresent()){ //cria um novo
-//
-//            linha.setCodigoLinha(produtoOMEGA[6]);
-//            linha.setNome(produtoOMEGA[7]);
-//            linha.getCategoriaLinha().setId(categorias.getId());
-//
-//            this.linhaService.save(LinhaDTO.of(linha));
-//
-//            }else{//update
-//
-//            this.linhaService.update(LinhaDTO.of(linha), linha.getId());
-//
-//            }
-//
-//            Optional<Produtos> produtosFornecedor = this.iProdutosRepository.findByCodigoProduto(produtoOMEGA[0]);
-//            if(!produtosFornecedor.isPresent()){ //cria um novo
-//
-//                produtos.setCodigoProduto(produtoOMEGA[0]);
-//                produtos.setNomeProduto(produtoOMEGA[1]);
-//                produtos.setPreco(Double.parseDouble(produtoOMEGA[2]));
-//                produtos.setUnidadeCaixa(Integer.parseInt(produtoOMEGA[3]));
-//
-//                String medida = produtoOMEGA[4].replaceAll("[0-9.]", "");
-//                String peso = produtoOMEGA[4].replaceAll("[^\\d.]", "");
-//                String data = produtoOMEGA[5];//  09/02/2020
-//
-//                produtos.setPesoMedida(medida);
-//                produtos.setPesoUnidade(Double.parseDouble(peso));
-//                produtos.setValidade(LocalDate.parse(data));
-//                produtos.setLinhaCategoria(linhaFornecedor.get());
-//
-//                this.iProdutosRepository.save(produtos);
-//
-//            }else{//update
-//
-//                update(ProdutosDTO.of(produtos), produtos.getId());
-//
-//            }
+//                    produtosDTO.setPesoMedida(medida);
+//                    produtosDTO.setPesoUnidade(Double.parseDouble(peso));
+//                    produtosDTO.setValidade(LocalDate.parse(data));
 //
 //
-//        }
+//                    produtosDTO.setIdLinha(idLin);
 //
-//    }
+//
+//                    this.iProdutosRepository.save(produtosDTO);
+//
+//                } else {//update
+//
+//                    LOGGER.info("atualizando produtos já existente ");
+//                    update(produtosDTO, produtosDTO.getId());
+//
+//                }
+
+
+        }
+
+    }
 }

@@ -41,17 +41,18 @@ public class LinhaService {
         linha.setCodigoLinha(linhaDTO.getCodigoLinha().toUpperCase());
         StringBuilder concatenationVariation = new StringBuilder();
 
-        if (linhaDTO.getCodigoLinha().length() != 10) {
+        if (linha.getCodigoLinha().length() != 10) {
             int resto = 10 - linhaDTO.getCodigoLinha().length();
-            System.out.println("A");
+
 
             for (int i = 0; i < resto; i++) {
                 concatenationVariation.append("0");
-                System.out.println(concatenationVariation);
+
 
             }
 
             String variationConcdatenation = concatenationVariation.toString() + linhaDTO.getCodigoLinha();
+
 
             variationConcdatenation = variationConcdatenation.toUpperCase();
 
@@ -59,15 +60,37 @@ public class LinhaService {
 
             System.out.println(linhaDTO.getCodigoLinha());
 
+
+        }else if(linhaDTO.getCodigoLinha().length() == 10) {
+
+            Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
+            LOGGER.info(categorias.toString());
+
+            linha.setNome(linhaDTO.getNome());
+            LOGGER.info(linhaDTO.getNome());
+
+            linha.setCategoriaLinha(categorias);
+
+
+            linha = this.iLinhaRepository.save(linha);
+
+            return LinhaDTO.of(linha);
+        }else{
+            throw new IllegalArgumentException("Fudeu bahia");
         }
 
-        Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
+
+        Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
+
 
         linha.setNome(linhaDTO.getNome());
-        linha.setCategoriaLinha(categorias.get());
+        linha.setCategoriaLinha(categorias);
+
+
         linha = this.iLinhaRepository.save(linha);
 
         return LinhaDTO.of(linha);
+
 
     }
 
@@ -108,11 +131,8 @@ public class LinhaService {
     public Optional <Linha> findByCodigoLinha(String codigoLinha) {
         Optional<Linha> linhaOptional = this.iLinhaRepository.findByCodigoLinha(codigoLinha);
 
-        if (linhaOptional.isPresent()) {
             return linhaOptional;
-        }
 
-        throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", codigoLinha));
     }
 
 
@@ -124,6 +144,14 @@ public class LinhaService {
         }
         throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", idLinha));
     }
+
+    public Linha findByCodigoLinhas (String codigoLinha){
+        Optional<Linha> linhaPeperoni = this.iLinhaRepository.findByCodigoLinha(codigoLinha);
+
+        return linhaPeperoni.get();
+
+    }
+
 
 
     public LinhaDTO update(LinhaDTO linhaDTO, Long id) {
@@ -137,11 +165,15 @@ public class LinhaService {
             LOGGER.debug("linha existente: {}", linhaSuper);
 
 
-            Optional<Categorias> categorias = this.categoriasService.findByCategoriaId(linhaDTO.getIdCategoria());
+            Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
 
-            linhaSuper.setCategoriaLinha(categorias.get());
+            linhaSuper.setCategoriaLinha(categorias);
+            LOGGER.info(categorias.getCodigoCategoria());
+
+
             linhaSuper.setNome(linhaDTO.getNome());
             linhaSuper.setCodigoLinha(linhaDTO.getCodigoLinha());
+
             linhaSuper = this.iLinhaRepository.save(linhaSuper);
 
             return LinhaDTO.of(linhaSuper);

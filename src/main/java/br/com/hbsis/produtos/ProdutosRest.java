@@ -60,11 +60,11 @@ public class ProdutosRest {
         this.produtosService.importar(file);
 
 }
-//    @PostMapping("/importarOmega/{idFornecedor}")
-//    public void  importarOmega(@PathVariable("idFornecedor") Long idFornecedor, @RequestParam("file") MultipartFile file ) throws Exception {
-//        LOGGER.info("Importando produtos  O M E G A ");
-//
-//         this.produtosService.importarOmega(file, idFornecedor);
-//    }
+    @PostMapping("/importarOmega/{idFornecedor}")
+    public void  importarOmega(@PathVariable("idFornecedor") Long idFornecedor, @RequestParam("file") MultipartFile file ) throws Exception {
+        LOGGER.info("Importando produtos  O M E G A ");
+
+         this.produtosService.importarOmega(file, idFornecedor);
+    }
 
 }

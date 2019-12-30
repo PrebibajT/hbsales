@@ -3,7 +3,6 @@ package br.com.hbsis.categoria;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
 
-import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,46 +37,74 @@ public class CategoriasService {
 
         Categorias categorias = new Categorias();
 
-        categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
+        if(categoriasDTO.getCodigoCategoria().substring(0,3).equals("CAT") && categoriasDTO.getCodigoCategoria().length() == 10 ) {
 
+            categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
 
-       if(categoriasDTO.getCodigoCategoria().length() == 3 ){
+        }
+       else if(categoriasDTO.getCodigoCategoria().length() == 3 ){
             String minhaVariavelConcatenada = categoriasDTO.getCodigoCategoria();
-            categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+            categorias.setCodigoCategoria(minhaVariavelConcatenada);
         }
         else if (categoriasDTO.getCodigoCategoria().length() == 2 ){
             String minhaVariavelConcatenada = "0" + categoriasDTO.getCodigoCategoria();
-            categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+            categorias.setCodigoCategoria(minhaVariavelConcatenada);
 
         }
-        else if (categoriasDTO.getCodigoCategoria().length() == 1 ){
-            String minhaVariavelConcatenada ="0" + "0" +  categoriasDTO.getCodigoCategoria();
-            categoriasDTO.setCodigoCategoria(minhaVariavelConcatenada);
+        else if (categoriasDTO.getCodigoCategoria().length() == 1 ) {
+            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
+            categorias.setCodigoCategoria(minhaVariavelConcatenada);
 
         }else {
-          throw new IllegalArgumentException("O código da categoria não é para ser maior q 3, seu mongol");
+          throw new IllegalArgumentException("O código da categoria não é para ser maior q 3, seu mongol nem maior no reload, boa sorte kk");
 
         }
+
+
 
         Fornecedor byFornecedorId = fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
 
         categorias.setNomeCategoria(categoriasDTO.getNomeCategoria());
         categorias.setFornecedorCategoria(byFornecedorId);
-        categorias.setCodigoCategoria(this.reValidate(byFornecedorId, categoriasDTO));
-        categorias = this.iCategoriasRepository.save(categorias);
 
-        return CategoriasDTO.of(categorias);
+        if(categorias.getCodigoCategoria().substring(0,3).equals("CAT")) {
+
+            categorias = this.iCategoriasRepository.save(categorias);
+
+            return CategoriasDTO.of(categorias);
+
+
+        }else{
+
+            LOGGER.info("SE N FOR CADASTRO VC TA FUDIDO SEU BOSTINHA KKKKKKKKK");
+
+            categorias.setCodigoCategoria(this.reValidate(byFornecedorId, categoriasDTO));
+
+            categorias = this.iCategoriasRepository.save(categorias);
+
+            return CategoriasDTO.of(categorias);
+        }
+
     }
 
+
+
+
+
+    public Optional<Categorias> findByCategoriaId(Long id) {
+        Optional<Categorias> categoriasOptionale = this.iCategoriasRepository.findById(id);
+
+        if (categoriasOptionale.isPresent()) {
+            return categoriasOptionale;
+        }
+
+        throw new IllegalArgumentException(String.format("id  %s não existe", id));
+    }
 
     public Optional <Categorias> findByCodigoCategoria (String codigoCategoria){
             Optional<Categorias> codigoQTem = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
 
-        if (codigoQTem.isPresent()){
             return codigoQTem;
-
-        }
-        throw new IllegalArgumentException("O código da categoria não é para ser null, seu mongol");
     }
 
 
@@ -101,14 +128,18 @@ public class CategoriasService {
     }
 
 
-    public Optional<Categorias> findByCategoriaId(Long id) {
-        Optional<Categorias> categoriasOptionale = this.iCategoriasRepository.findById(id);
+    public Categorias findById (Long id){
+        Optional <Categorias> idHumido = this.iCategoriasRepository.findById(id);
 
-        if (categoriasOptionale.isPresent()) {
-            return categoriasOptionale;
-        }
+        return idHumido.get();
 
-        throw new IllegalArgumentException(String.format("id  %s não existe", id));
+    }
+
+    public Categorias findByCodigoCategorias (String codigoCategoria){
+        Optional <Categorias> codigoHumido = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
+
+        return codigoHumido.get();
+
     }
 
 
@@ -134,14 +165,29 @@ public class CategoriasService {
             LOGGER.debug("Payload: {}", categoriasDTO);
             LOGGER.debug("Produtos existente: {}", categoriasExistente);
 
+            Fornecedor fornecedor = this.fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
+
 
             categoriasExistente.setNomeCategoria(categoriasDTO.getNomeCategoria());
             categoriasExistente.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
-            categoriasExistente.setFornecedorCategoria(fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor()));
-            categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);
-            categoriasExistente.setCodigoCategoria(this.reValidate(categoriasExistente.getFornecedorCategoria(), categoriasDTO));
 
-            return CategoriasDTO.of(categoriasExistente);
+
+            categoriasExistente.setFornecedorCategoria(fornecedor);
+
+            categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);
+
+            if(categoriasDTO.getCodigoCategoria().substring(0,3).equals("CAT")) {
+
+                categoriasExistente.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
+
+                return CategoriasDTO.of(categoriasExistente);
+
+            }else{
+                categoriasExistente.setCodigoCategoria(this.reValidate(categoriasExistente.getFornecedorCategoria(), categoriasDTO));
+
+                return CategoriasDTO.of(categoriasExistente);
+            }
+
         }
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));

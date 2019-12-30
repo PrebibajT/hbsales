@@ -8,6 +8,7 @@ import java.util.Optional;
 @Repository
 interface ICategoriasRepository extends JpaRepository<Categorias, Long> {
 
-    Optional <Categorias> findByCodigoCategoria (String codigoCategoria);
+   Optional <Categorias> findByCodigoCategoria (String codigoCategoria);
+
 
 }

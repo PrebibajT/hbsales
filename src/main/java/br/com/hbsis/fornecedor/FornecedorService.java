@@ -104,10 +104,9 @@ public class FornecedorService {
 
     public Fornecedor findByFornecedorId(Long id) {
         Optional<Fornecedor> fornecedorOptional = this.iFornecedorRepository.findById(id);
-        if (fornecedorOptional.isPresent()) {
+
             return fornecedorOptional.get();
-        }
-        throw new IllegalArgumentException(String.format("ID %s não existe", id));
+
     }
 
 
