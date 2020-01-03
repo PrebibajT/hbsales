@@ -3,8 +3,6 @@ package br.com.hbsis.fornecedor;
 import javax.persistence.*;
 
 
-
-
 @Entity
 @Table(name = "seg_fornecedores")
 public class Fornecedor {
@@ -13,17 +11,17 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome_fantasia", unique = true, nullable = false, length = 255)
+    @Column(name = "nome_fantasia",  nullable = false, length = 100)
     private String nomeFantasia;
     @Column(name = "cnpj", nullable = false, unique = true, length = 18)
     private String cnpj;
-    @Column(name = "razao_social", unique = true, length = 155)
+    @Column(name = "razao_social", length = 100)
     private String razaoSocial;
-    @Column(name = "endereco", unique = true,  length = 255)
+    @Column(name = "endereco", length = 100)
     private String endereco;
-    @Column(name = "telefone", unique = true, length = 16)
+    @Column(name = "telefone", length = 12)
     private String telefone;
-    @Column(name = "email", unique = true, length = 120)
+    @Column(name = "email", unique = true, length = 50)
     private String email;
 
 

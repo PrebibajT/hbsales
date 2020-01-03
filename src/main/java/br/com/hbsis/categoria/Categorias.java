@@ -14,6 +14,7 @@ public class Categorias {
     @Column(name = "codigo_categoria",   length = 10)
     private String codigoCategoria;
 
+
     @ManyToOne
     @JoinColumn (name = "id_fornecedor", referencedColumnName="id")
     private Fornecedor fornecedorCategoria;
