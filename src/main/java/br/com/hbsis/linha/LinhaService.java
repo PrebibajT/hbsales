@@ -52,30 +52,26 @@ public class LinhaService {
             }
 
             String variationConcdatenation = concatenationVariation.toString() + linhaDTO.getCodigoLinha();
-
-
             variationConcdatenation = variationConcdatenation.toUpperCase();
 
             linha.setCodigoLinha(variationConcdatenation);
-
             System.out.println(linhaDTO.getCodigoLinha());
 
 
         }else if(linhaDTO.getCodigoLinha().length() == 10) {
 
             Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
-            LOGGER.info(categorias.toString());
 
             linha.setNome(linhaDTO.getNome());
-            LOGGER.info(linhaDTO.getNome());
-
             linha.setCategoriaLinha(categorias);
 
 
             linha = this.iLinhaRepository.save(linha);
 
             return LinhaDTO.of(linha);
+
         }else{
+
             throw new IllegalArgumentException("Fudeu bahia");
         }
 
@@ -136,13 +132,12 @@ public class LinhaService {
     }
 
 
-    public Optional <Linha> findByIdLinha(Long idLinha) {
+    public Linha findByIdLinha(Long idLinha) {
         Optional<Linha> linhaOptionale = this.iLinhaRepository.findById(idLinha);
 
-        if (linhaOptionale.isPresent()) {
-            return linhaOptionale;
-        }
-        throw new IllegalArgumentException(String.format("codigo da linha  %s não existe", idLinha));
+            return linhaOptionale.get();
+
+
     }
 
     public Linha findByCodigoLinhas (String codigoLinha){
