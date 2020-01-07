@@ -12,15 +12,20 @@ class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(name = "login", unique = true, nullable = false, length = 100)
 	private String login;
-	@Column(name = "senha", nullable = false, length = 255)
+	@Column(name = "senha", nullable = false, length = 100)
 	private String senha;
 	@Column(name = "uuid", unique = true, updatable = false, length = 36)
 	private String uuid;
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getLogin() {

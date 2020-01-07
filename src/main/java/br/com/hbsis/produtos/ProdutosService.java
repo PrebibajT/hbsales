@@ -1,31 +1,22 @@
 package br.com.hbsis.produtos;
 
-
 import br.com.hbsis.categoria.Categorias;
 import br.com.hbsis.categoria.CategoriasDTO;
 import br.com.hbsis.categoria.CategoriasService;
-import br.com.hbsis.fornecedor.Fornecedor;
-import br.com.hbsis.fornecedor.FornecedorDTO;
-import br.com.hbsis.fornecedor.FornecedorService;
+
 import br.com.hbsis.linha.Linha;
 import br.com.hbsis.linha.LinhaDTO;
 import br.com.hbsis.linha.LinhaService;
 
-import javafx.util.converter.LocalDateStringConverter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.rmi.PortableRemoteObject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,14 +28,12 @@ public class ProdutosService {
     private final IProdutosRepository iProdutosRepository;
     private final LinhaService linhaService;
     private final CategoriasService categoriasService;
-    private final FornecedorService fornecedorService;
 
 
-    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService, FornecedorService fornecedorService) {
+    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService) {
         this.iProdutosRepository = iProdutosRepository;
         this.linhaService = linhaService;
         this.categoriasService = categoriasService;
-        this.fornecedorService = fornecedorService;
     }
 
     public ProdutosDTO save(ProdutosDTO produtosDTO) {
@@ -129,25 +118,19 @@ public class ProdutosService {
 
 
         } else if (produtosDTO.getPesoMedida().equals("mg")) {
-
+            LOGGER.info("Ok é em mg");
 
         } else if (produtosDTO.getPesoMedida().equals("g")) {
-
+            LOGGER.info("Ok é em g");
 
         } else if (produtosDTO.getPesoMedida().equals("Kg")) {
-
+            LOGGER.info("Ok é em Kg");
 
         } else {
             throw new IllegalArgumentException("O peso da medida do produto não vai aceitar isso, seu fudido");
         }
     }
 
-    public Produtos findByCodigoProduto(String codigoProduto){
-       Produtos produtosPeperoni = this.iProdutosRepository.findByCodigoProduto(codigoProduto);
-
-        return produtosPeperoni;
-
-    }
 
     public ProdutosDTO update(ProdutosDTO produtosDTO, Long id) {
         Optional<Produtos> produtosOptional = this.iProdutosRepository.findById(id);
@@ -200,7 +183,7 @@ public class ProdutosService {
 
         for (Produtos produtos : express) {
 
-            miEscritor.append("\n" + produtos.getCodigoProduto() + ";");
+            miEscritor.append("\n" + produtos.getCodigoProduto() + ";" );
             miEscritor.append(produtos.getNomeProduto() + ";");
             miEscritor.append(produtos.getPreco() + ";");
             miEscritor.append(produtos.getUnidadeCaixa() + ";");
@@ -254,23 +237,15 @@ public class ProdutosService {
             produtos.setLinhaCategoria(linha.get());
 
 
-            if (linha.isPresent()) {
-
-                this.iProdutosRepository.save(produtos);
-                LOGGER.info("Tudo ok mestre, por enquanto");
-
-            }
-            else {
-                throw new IllegalArgumentException("Azedo em mestre e não foi pouco");
-
-            }
+            this.iProdutosRepository.save(produtos);
+            LOGGER.info("Tudo ok mestre, por enquanto");
 
         }
 
     }
 
 
-    public void importarOmega(MultipartFile file, Long idFornecedor) throws IOException, ParseException {
+    public void importarOmega(MultipartFile file, Long idFornecedor) throws IOException {
 
         ProdutosDTO produtosDTO = new ProdutosDTO();
         LinhaDTO linhaDTO = new LinhaDTO();
@@ -278,7 +253,7 @@ public class ProdutosService {
 
         BufferedReader mioLettore = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
-        String line = "";
+        String line = " ";
         String splitBy = ";";
 
         line = mioLettore.readLine();

@@ -5,15 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Optional;
 import java.util.UUID;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
 
 /**
  * Classe responsável pelo processamento da regra de negócio
@@ -37,6 +30,7 @@ public class UsuarioService {
 		LOGGER.debug("Usuario: {}", usuarioDTO);
 
 		Usuario usuario = new Usuario();
+
 		usuario.setLogin(usuarioDTO.getLogin());
 		usuario.setSenha(usuarioDTO.getSenha());
 		usuario.setUuid(UUID.randomUUID().toString());
