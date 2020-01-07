@@ -37,30 +37,29 @@ public class CategoriasService {
 
         Categorias categorias = new Categorias();
 
-        if(categoriasDTO.getCodigoCategoria().substring(0,3).equals("CAT") && categoriasDTO.getCodigoCategoria().length() == 10 ) {
+        if(categoriasDTO.getCodigoCategoria().substring(0,1).equals("C") && categoriasDTO.getCodigoCategoria().length() == 10 ) {
 
             categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
 
-        }
-       else if(categoriasDTO.getCodigoCategoria().length() == 3 ){
-            String minhaVariavelConcatenada = categoriasDTO.getCodigoCategoria();
+        }else if (categoriasDTO.getCodigoCategoria().length() == 1 ) {
+            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
             categorias.setCodigoCategoria(minhaVariavelConcatenada);
+
         }
-        else if (categoriasDTO.getCodigoCategoria().length() == 2 ){
+        else if (categoriasDTO.getCodigoCategoria().length() == 2 ) {
             String minhaVariavelConcatenada = "0" + categoriasDTO.getCodigoCategoria();
             categorias.setCodigoCategoria(minhaVariavelConcatenada);
 
         }
-        else if (categoriasDTO.getCodigoCategoria().length() == 1 ) {
-            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
+        else if(categoriasDTO.getCodigoCategoria().length() == 3 ){
+            String minhaVariavelConcatenada = categoriasDTO.getCodigoCategoria();
             categorias.setCodigoCategoria(minhaVariavelConcatenada);
 
-        }else {
+        }else{
+
           throw new IllegalArgumentException("O código da categoria não é para ser maior q 3, seu mongol nem maior no reload, boa sorte kk");
 
         }
-
-
 
         Fornecedor byFornecedorId = fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
 
@@ -76,8 +75,6 @@ public class CategoriasService {
 
         }else{
 
-            LOGGER.info("SE N FOR CADASTRO VC TA FUDIDO SEU BOSTINHA KKKKKKKKK");
-
             categorias.setCodigoCategoria(this.reValidate(byFornecedorId, categoriasDTO));
 
             categorias = this.iCategoriasRepository.save(categorias);
@@ -86,9 +83,6 @@ public class CategoriasService {
         }
 
     }
-
-
-
 
 
     public Optional<Categorias> findByCategoriaId(Long id) {
@@ -161,17 +155,14 @@ public class CategoriasService {
         if (categoriasExistenteOptional.isPresent()) {
             Categorias categoriasExistente = categoriasExistenteOptional.get();
 
-            LOGGER.info("Atualizando produtos.... id:[{}]", categoriasExistente.getCodigoCategoria());
+            LOGGER.info("Atualizando produtos.... id:[{}]", categoriasExistente.getId());
             LOGGER.debug("Payload: {}", categoriasDTO);
             LOGGER.debug("Produtos existente: {}", categoriasExistente);
 
             Fornecedor fornecedor = this.fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
 
-
             categoriasExistente.setNomeCategoria(categoriasDTO.getNomeCategoria());
             categoriasExistente.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
-
-
             categoriasExistente.setFornecedorCategoria(fornecedor);
 
             categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);

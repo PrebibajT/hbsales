@@ -163,9 +163,6 @@ public class LinhaService {
             Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
 
             linhaSuper.setCategoriaLinha(categorias);
-            LOGGER.info(categorias.getCodigoCategoria());
-
-
             linhaSuper.setNome(linhaDTO.getNome());
             linhaSuper.setCodigoLinha(linhaDTO.getCodigoLinha());
 

@@ -4,7 +4,6 @@ import br.com.hbsis.linha.Linha;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "seg_produtos")

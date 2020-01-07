@@ -29,12 +29,14 @@ public class CategoriasRest {
     }
 
     @PutMapping("/{id}")
-    public CategoriasDTO update(@PathVariable("id") Long codigoCategoria, @RequestBody CategoriasDTO categoriasDTO) {
-        LOGGER.info("Recebendo Update para produtos de ID: {}", codigoCategoria);
+    public CategoriasDTO update(@PathVariable("id") Long id, @RequestBody CategoriasDTO categoriasDTO) {
+        LOGGER.info("Recebendo Update para produtos de ID: {}", id);
         LOGGER.debug("Payload: {}", categoriasDTO);
 
-        return this.categoriasService.update(categoriasDTO, codigoCategoria);
+        return this.categoriasService.update(categoriasDTO, id);
     }
+
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
         LOGGER.info("Recebendo Delete para categorias de ID: {}", id);
