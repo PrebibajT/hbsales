@@ -40,7 +40,7 @@ public class PeriodoVendasService {
         PeriodoVendas periodoVendasxx = this.iPeriodoVendasRepository.findAllFornecedorById(fornecedorxx.getId());
 
 
-        if (periodoVendasxx.getFornecedorPeriodo() == null){
+        if (periodoVendasxx == null){
 
             periodoVendas.setFornecedorPeriodo(fornecedorxx);
             periodoVendas.setDataInicial(periodoVendasDTO.getDataInicial());

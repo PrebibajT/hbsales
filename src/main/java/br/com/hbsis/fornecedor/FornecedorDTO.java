@@ -1,8 +1,6 @@
 package br.com.hbsis.fornecedor;
 
-/**
- * Classe para tráfego das informações do usuário
- */
+
 public class FornecedorDTO {
     private Long id;
     private String nomeFantasia;
@@ -96,7 +94,7 @@ public class FornecedorDTO {
 
     @Override
     public String toString() {
-        return "Nome_Fantasia{" +
+        return "Nome_Fantasia{" + nomeFantasia +
                 "id=" + id +
                 ", CNPJ='" + cnpj + '\'' +
                 ", Razao_Social='" + razaoSocial + '\'' +

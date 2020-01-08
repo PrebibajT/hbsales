@@ -10,13 +10,13 @@ public class Funcionario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome", length = 50)
+    @Column(name = "nome", nullable = false, length = 50)
     private String nome;
 
-    @Column(name = "email", length = 50)
+    @Column(name = "email", nullable = false,  length = 50)
     private String email;
 
-    @Column(name = "uuid", length = 36)
+    @Column(name = "uuid", nullable = false, length = 36)
     private String uuid;
 
     public Long getId() {

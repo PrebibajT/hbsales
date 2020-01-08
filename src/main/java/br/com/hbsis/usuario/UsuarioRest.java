@@ -30,14 +30,13 @@ public class UsuarioRest {
 
 	@GetMapping("/{id}")
 	public UsuarioDTO find(@PathVariable("id") Long id) {
-
 		LOGGER.info("Recebendo find by ID... id: [{}]", id);
 
 		return this.usuarioService.findById(id);
 	}
 
 	@PutMapping("/{id}")
-	public UsuarioDTO udpate(@PathVariable("id") Long id, @RequestBody UsuarioDTO usuarioDTO) {
+	public UsuarioDTO update(@PathVariable("id") Long id, @RequestBody UsuarioDTO usuarioDTO) {
 		LOGGER.info("Recebendo Update para Usuário de ID: {}", id);
 		LOGGER.debug("Payload: {}", usuarioDTO);
 
