@@ -4,6 +4,10 @@ import br.com.hbsis.categoria.Categorias;
 import br.com.hbsis.categoria.CategoriasDTO;
 import br.com.hbsis.categoria.CategoriasService;
 
+import br.com.hbsis.fornecedor.Fornecedor;
+import br.com.hbsis.fornecedor.FornecedorService;
+import br.com.hbsis.funcionario.Funcionario;
+import br.com.hbsis.funcionario.FuncionarioService;
 import br.com.hbsis.linha.Linha;
 import br.com.hbsis.linha.LinhaDTO;
 import br.com.hbsis.linha.LinhaService;
@@ -28,12 +32,15 @@ public class ProdutosService {
     private final IProdutosRepository iProdutosRepository;
     private final LinhaService linhaService;
     private final CategoriasService categoriasService;
+    private final FornecedorService fornecedorService;
+    private final FuncionarioService funcionarioService;
 
-
-    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService) {
+    public ProdutosService(IProdutosRepository iProdutosRepository, LinhaService linhaService, CategoriasService categoriasService, FornecedorService fornecedorService, FuncionarioService funcionarioService) {
         this.iProdutosRepository = iProdutosRepository;
         this.linhaService = linhaService;
         this.categoriasService = categoriasService;
+        this.fornecedorService = fornecedorService;
+        this.funcionarioService = funcionarioService;
     }
 
     public ProdutosDTO save(ProdutosDTO produtosDTO) {
@@ -166,6 +173,13 @@ public class ProdutosService {
         LOGGER.info("Executando delete para produto de ID: [{}]", id);
 
         this.iProdutosRepository.deleteById(id);
+    }
+
+    public Produtos findById (Long id){
+        Optional<Produtos> idHumido = this.iProdutosRepository.findById(id);
+
+        return idHumido.get();
+
     }
 
 
@@ -391,5 +405,52 @@ public class ProdutosService {
 
         }
 
+
+    }
+
+    public void exportarFornecedorProduto(HttpServletResponse response, Long idFornecedor) throws IOException {
+
+            response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
+            response.setContentType("text/csv");
+
+            List<Produtos> express = iProdutosRepository.findAll();
+            PrintWriter myWriter = response.getWriter();
+
+            myWriter.append("nome_produto" + ";" + "quantidade" + ";" + "fornecedor" + "-" + "CNPJ");
+
+            Fornecedor fornecedor = fornecedorService.findByFornecedorId(idFornecedor);
+
+            for (Produtos produtos : express) {
+                myWriter.append("\n" + produtos.getNomeProduto() + ";");
+                myWriter.append(produtos.getUnidadeCaixa() + ";");
+                myWriter.append(fornecedor.getRazaoSocial() + "-");
+                myWriter.append(fornecedor.getCnpj());
+
+                myWriter.flush();
+            }
+    }
+
+    public void exportarFuncionarioProduto(HttpServletResponse response, Long idFornecedor, Long idFuncionario) throws IOException {
+
+        response.setHeader("Content-Disposition", "attachment; filename=\"output.csv\"");
+        response.setContentType("text/csv");
+
+        List<Produtos> express = iProdutosRepository.findAll();
+        PrintWriter myWriter = response.getWriter();
+
+        myWriter.append("nome_produto" + ";" + "quantidade" + ";" + "fornecedor" + "-" + "CNPJ");
+
+        Fornecedor fornecedor = fornecedorService.findByFornecedorId(idFornecedor);
+        Funcionario funcionario = funcionarioService.findByIdFuncionario(idFuncionario);
+
+        for (Produtos produtos : express) {
+            myWriter.append("\n" + funcionario.getNome() + ";");
+            myWriter.append(produtos.getNomeProduto() + ";");
+            myWriter.append(produtos.getUnidadeCaixa() + ";");
+            myWriter.append(fornecedor.getRazaoSocial() + "-");
+            myWriter.append(fornecedor.getCnpj());
+
+            myWriter.flush();
+        }
     }
 }

@@ -236,10 +236,12 @@ public class CategoriasService {
 
             Optional<Fornecedor> fornecedor = this.fornecedorService.findByCnpj(desmascaradoCnpj);
 
+                    if(fornecedor.isPresent()){
 
-            categorias.setFornecedorCategoria(fornecedor.get());
+                        categorias.setFornecedorCategoria(fornecedor.get());
+                        this.iCategoriasRepository.save(categorias);
 
-            this.iCategoriasRepository.save(categorias);
+                    }
 
 
         }

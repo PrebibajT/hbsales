@@ -3,12 +3,18 @@ package br.com.hbsis.periodoVendas;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
 
+import br.com.hbsis.linha.Linha;
+import br.com.hbsis.pedido.Pedido;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,11 +40,8 @@ public class PeriodoVendasService {
         LOGGER.debug("Periodo de vendas: {}", periodoVendasDTO);
 
         PeriodoVendas periodoVendas = new PeriodoVendas();
-
         Fornecedor fornecedorxx = fornecedorService.findByFornecedorId(periodoVendasDTO.getIdFornecedor());
-
         PeriodoVendas periodoVendasxx = this.iPeriodoVendasRepository.findAllFornecedorById(fornecedorxx.getId());
-
 
         if (periodoVendasxx == null){
 
@@ -49,7 +52,6 @@ public class PeriodoVendasService {
             periodoVendas.setDescricao(periodoVendasDTO.getDescricao());
 
             periodoVendas = this.iPeriodoVendasRepository.save(periodoVendas);
-
             return PeriodoVendasDTO.of(periodoVendas);
 
         }
@@ -57,19 +59,15 @@ public class PeriodoVendasService {
 
                     if (periodoVendasDTO.getDataInicial().isAfter(periodoVendasxx.getDataInicial()) && periodoVendasDTO.getDataInicial().isBefore(periodoVendasxx.getDataFinal())){
                         throw  new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, maxime");
-
                     }
                         if(periodoVendasDTO.getDataFinal().isBefore(periodoVendasxx.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(periodoVendasxx.getDataInicial())) {
                             throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 4");
-
                         }
                             if(periodoVendasDTO.getDataInicial().equals(periodoVendasxx.getDataInicial())){
                                   throw  new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 3");
-
                             }
                                 if(periodoVendasDTO.getDataFinal().equals(periodoVendasxx.getDataFinal())){
                                     throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 5");
-
                                 }
                                 else{
 
@@ -82,11 +80,9 @@ public class PeriodoVendasService {
                         periodoVendas = this.iPeriodoVendasRepository.save(periodoVendas);
 
                         return PeriodoVendasDTO.of(periodoVendas);
-
                     }
 
                 }else {
-
 
                     periodoVendas.setFornecedorPeriodo(fornecedorxx);
                     periodoVendas.setDataInicial(periodoVendasDTO.getDataInicial());
@@ -95,15 +91,9 @@ public class PeriodoVendasService {
                     periodoVendas.setDescricao(periodoVendasDTO.getDescricao());
 
                     periodoVendas = this.iPeriodoVendasRepository.save(periodoVendas);
-
                     return PeriodoVendasDTO.of(periodoVendas);
                 }
-
-
-
-
     }
-
 
     private void validate(PeriodoVendasDTO periodoVendasDTO) {
         LOGGER.info("Validando produtos");
@@ -139,7 +129,6 @@ public class PeriodoVendasService {
             PeriodoVendas periodoVendasWow = periodoVendasOptional.get();
 
             if (periodoVendasWow.getDataFinal().isAfter(LocalDate.now())) {
-
                 throw new IllegalArgumentException("Já passou a data em que você pode alterar algo");
 
             } else {
@@ -185,25 +174,24 @@ public class PeriodoVendasService {
             }
         }
 
-
-
-
-
-
-
                 throw new IllegalArgumentException(String.format("ID %s não existe", id));
             }
+    public PeriodoVendas findById (Long id){
+        Optional<PeriodoVendas> idHumido = this.iPeriodoVendasRepository.findById(id);
 
+        return idHumido.get();
 
+    }
 
+    public PeriodoVendas findAllByFornecedor (Long idFornecedor){
+       PeriodoVendas idHumido = this.iPeriodoVendasRepository.findAllFornecedorById(idFornecedor);
 
+        return idHumido;
 
-
+    }
     public void delete(Long id) {
         LOGGER.info("Executando delete para produto de ID: [{}]", id);
 
         this.iPeriodoVendasRepository.deleteById(id);
     }
-
-
 }

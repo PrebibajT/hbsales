@@ -67,4 +67,18 @@ public class ProdutosRest {
          this.produtosService.importarOmega(file, idFornecedor);
     }
 
+    @PostMapping("/exportarFornecedor/{idFornecedor}")
+    public void  exportarFornecedorProduto(@PathVariable("idFornecedor") Long idFornecedor,HttpServletResponse response) throws Exception {
+        LOGGER.info("Importando produtos  O M E G A ");
+
+        this.produtosService.exportarFornecedorProduto(response, idFornecedor);
+    }
+
+    @PostMapping("/exportarFuncionario/{idFornecedor}/{idFuncionario}")
+    public void  exportarFuncionarioProduto(@PathVariable("idFuncionario") Long idFuncionario,@PathVariable("idFornecedor") Long idFornecedor,HttpServletResponse response) throws Exception {
+        LOGGER.info("Importando produtos  O M E G A ");
+
+        this.produtosService.exportarFuncionarioProduto(response, idFornecedor, idFuncionario);
+    }
+
 }
