@@ -1,5 +1,6 @@
 package br.com.hbsis.pedido;
 
+import br.com.hbsis.RequestLoggingInterceptor;
 import br.com.hbsis.fornecedor.Fornecedor;
 import br.com.hbsis.fornecedor.FornecedorService;
 
@@ -7,7 +8,7 @@ import br.com.hbsis.funcionario.Funcionario;
 import br.com.hbsis.funcionario.FuncionarioService;
 import br.com.hbsis.itens.Item;
 import br.com.hbsis.itens.ItensDTO;
-import br.com.hbsis.itens.ItensService;
+import br.com.hbsis.itens.InvoiceDTO;
 import br.com.hbsis.periodoVendas.PeriodoVendas;
 import br.com.hbsis.periodoVendas.PeriodoVendasService;
 import br.com.hbsis.produtos.Produtos;
@@ -15,11 +16,11 @@ import br.com.hbsis.produtos.ProdutosService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PedidoService {
@@ -62,24 +63,41 @@ public class PedidoService {
         pedido.setUid(arrumaUid(pedidoDTO));
 
         pedido.setItens(convercaoItens(pedidoDTO.getItens(),pedido));
-        LOGGER.info(PedidoDTO.of(pedido).toString());
 
         pedido = this.iPedidoRepository.save(pedido);
+
+        List<Item> a = pedido.getItens();
+
+        this.validaAPI(InvoiceDTO.of(pedido,a));
+
 
         return PedidoDTO.of(pedido);
     }
 
     public Long arrumaUid(PedidoDTO pedidoDTO){
+        if(true){
+            return ((long) new Random().nextInt(100000));
+        }
+
+        /**
+         * Possui unicidade de código dentro do banco
+         * - A Aplicação deveria gerar esse código antes de mandar pro banco
+         * - Necessário fazer uma consulta dentro do banco pra pegar o último valor inserido
+         * - Incrementa e atribui ao próximo pedido
+         */
 
         Pedido pedido = new Pedido();
 
-        if(pedidoDTO.getUid() == null && pedido.getUid() == null){
-            Long acaso = pedidoDTO.getIdFornecedor();
-            pedidoDTO.setuUid(acaso);
+        Pedido pedidoxx = iPedidoRepository.findByUid(pedido.getUid());
 
 
-        }else if (pedidoDTO.getUid() == null){
-            pedidoDTO.setuUid(pedido.getUid() + 1);
+        if(pedidoxx.getUid() == null){
+           String um = "1";
+          pedidoxx.setUid(Long.parseLong(um));
+
+
+        }else if (pedidoxx.getUid() >= 1){
+            pedidoDTO.setuUid(pedidoxx.getUid() + 1);
         }
 
         return pedidoDTO.getUid();
@@ -96,6 +114,16 @@ public class PedidoService {
             itens.add(itens1);
         }
         return itens;
+    }
+
+    private void validaAPI(InvoiceDTO invoiceDTO) {
+        RestTemplate template = new RestTemplate();
+        template.setInterceptors(Collections.singletonList(new RequestLoggingInterceptor()));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "f5a00866-1b67-11ea-978f-2e728ce88125");
+//        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<InvoiceDTO> httpEntity = new HttpEntity<>(invoiceDTO, headers);
+        ResponseEntity<InvoiceDTO> response = template.exchange("http://10.2.54.25:9999/api/invoice", HttpMethod.POST, httpEntity, InvoiceDTO.class);
     }
 
 
@@ -184,5 +212,11 @@ public class PedidoService {
 
         this.iPedidoRepository.deleteById(id);
     }
+
+//    public Pedido pegaLadrao(Long idFuncionario){
+//
+//
+//
+//    }
 
 }

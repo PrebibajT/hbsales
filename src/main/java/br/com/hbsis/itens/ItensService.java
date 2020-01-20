@@ -37,14 +37,6 @@ public class ItensService {
 
 
 
-//    private void validaAPI(ItensDTO itensDTO) {
-//        RestTemplate template = new RestTemplate();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Authorization", "f5a00866-1b67-11ea-978f-2e728ce88125");
-//        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-//        HttpEntity httpEntity = new HttpEntity(itensDTO, headers);
-//        ResponseEntity<ItensDTO> response = template.exchange("http://10.2.54.25:9999/api/invoice", HttpMethod.POST, httpEntity, ItensDTO.class);
-//
-//    }
+
 
 }

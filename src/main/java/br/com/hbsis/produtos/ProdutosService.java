@@ -195,7 +195,17 @@ public class ProdutosService {
                 ";" + "Código linha" + ";" + "Nome linha" + ";" + "Código categoria" + ";" + "Nome categoria" + ";" + "CNPJ fornecedor"
                 + ";" + "Razão social");
 
+
+
         for (Produtos produtos : express) {
+
+            String doisPrimeiros = produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj().substring(0,2);
+            String tresSegundos= produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj().substring(2,5);
+            String tresTerceiros = produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj().substring(5,8);
+            String penultimosQartos = produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj().substring(8,12);
+            String ultimosDois = produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj().substring(12,14);
+            String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
+                    penultimosQartos + "-" + ultimosDois;
 
             miEscritor.append("\n" + produtos.getCodigoProduto() + ";" );
             miEscritor.append(produtos.getNomeProduto() + ";");
@@ -207,7 +217,7 @@ public class ProdutosService {
             miEscritor.append(produtos.getLinhaCategoria().getNome() + ";");
             miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getCodigoCategoria() + ";");
             miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getNomeCategoria() + ";");
-            miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getCnpj() + ";");
+            miEscritor.append(cnpjDisfarcado + ";");
             miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getRazaoSocial());
 
             miEscritor.flush();
@@ -420,11 +430,19 @@ public class ProdutosService {
 
             Fornecedor fornecedor = fornecedorService.findByFornecedorId(idFornecedor);
 
+        String doisPrimeiros = fornecedor.getCnpj().substring(0,2);
+        String tresSegundos= fornecedor.getCnpj().substring(2,5);
+        String tresTerceiros = fornecedor.getCnpj().substring(5,8);
+        String penultimosQartos = fornecedor.getCnpj().substring(8,12);
+        String ultimosDois = fornecedor.getCnpj().substring(12,14);
+        String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
+                penultimosQartos + "-" + ultimosDois;
+
             for (Produtos produtos : express) {
                 myWriter.append("\n" + produtos.getNomeProduto() + ";");
                 myWriter.append(produtos.getUnidadeCaixa() + ";");
                 myWriter.append(fornecedor.getRazaoSocial() + "-");
-                myWriter.append(fornecedor.getCnpj());
+                myWriter.append(cnpjDisfarcado);
 
                 myWriter.flush();
             }
@@ -443,12 +461,21 @@ public class ProdutosService {
         Fornecedor fornecedor = fornecedorService.findByFornecedorId(idFornecedor);
         Funcionario funcionario = funcionarioService.findByIdFuncionario(idFuncionario);
 
+
+        String doisPrimeiros = fornecedor.getCnpj().substring(0,2);
+        String tresSegundos= fornecedor.getCnpj().substring(2,5);
+        String tresTerceiros = fornecedor.getCnpj().substring(5,8);
+        String penultimosQartos = fornecedor.getCnpj().substring(8,12);
+        String ultimosDois = fornecedor.getCnpj().substring(12,14);
+        String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
+                penultimosQartos + "-" + ultimosDois;
+
         for (Produtos produtos : express) {
             myWriter.append("\n" + funcionario.getNome() + ";");
             myWriter.append(produtos.getNomeProduto() + ";");
             myWriter.append(produtos.getUnidadeCaixa() + ";");
             myWriter.append(fornecedor.getRazaoSocial() + "-");
-            myWriter.append(fornecedor.getCnpj());
+            myWriter.append(cnpjDisfarcado);
 
             myWriter.flush();
         }

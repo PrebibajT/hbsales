@@ -246,4 +246,16 @@ public class CategoriasService {
 
         }
     }
+
+
+//    String doisPrimeiros = fornecedor.getCnpj().substring(0,2);
+//    String tresSegundos= fornecedor.getCnpj().substring(2,5);
+//    String tresTerceiros = fornecedor.getCnpj().substring(5,8);
+//    String penultimosQartos = fornecedor.getCnpj().substring(8,12);
+//    String ultimosDois = fornecedor.getCnpj().substring(12,14);
+//    String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
+//            penultimosQartos + "-" + ultimosDois;
+//
+//
+//        fornecedor.setCnpj(cnpjDisfarcado);
 }

@@ -48,4 +48,10 @@ public class PedidoRest {
 
     }
 
+//    @GetMapping("/{id}")
+//    public Pedido pegaLadrao(@PathVariable("id") Long idFuncionario){
+//
+//       return this.pedidoService.pegaLadrao(idFuncionario);
+//    }
+
 }

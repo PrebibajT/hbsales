@@ -100,7 +100,6 @@ public class Pedido {
                 ", status='" + status +'\'' +
                 ", id_fornecedor='" + pedidoFornecedor +'\'' +
                 ", id_funcionario='" + pedidoFuncionario +'\'' +
-                ", id_itens='" + itens +'\'' +
                 ", data_criacao='" + dataDeCriacao +'\'' +
                 '}';
 

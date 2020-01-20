@@ -7,4 +7,8 @@ import java.util.Optional;
 
 @Repository
 interface IPedidoRepository extends JpaRepository<Pedido , Long> {
+
+    Pedido findByUid(Long uid);
+
+
 }

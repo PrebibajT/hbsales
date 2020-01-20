@@ -87,12 +87,7 @@ public class FuncionarioService {
         Optional<Funcionario> funcionarioExistente = this.iFuncionarioRepository.findById(id);
 
             return funcionarioExistente.get();
-
-
-
     }
-
-
 
     public void delete(Long id) {
         LOGGER.info("Executando delete para funcionario de ID: [{}]", id);
