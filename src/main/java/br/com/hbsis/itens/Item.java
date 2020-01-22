@@ -61,7 +61,7 @@ public class Item {
     public String toString(){
         return "item{"+
                 ", id='" + id +'\'' +
-                ", id_pedido='" + idPedido +'\'' +
+                ", id_pedido='" + idPedido.getId() +'\'' +
                 ", id_produto='" + idProduto +'\'' +
                 ", quantidade='" + quantidade +'\'' +
                 '}';

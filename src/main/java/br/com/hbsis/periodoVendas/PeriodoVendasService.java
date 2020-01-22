@@ -106,11 +106,11 @@ public class PeriodoVendasService {
         }
 
         if (periodoVendasDTO.getDataInicial() == null || periodoVendasDTO.getDataInicial().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("O código da categoria não pode ser nulo, nem antes de hoje");
+            throw new IllegalArgumentException("O DataInicial da categoria não pode ser nulo, nem antes de hoje");
         }
 
         if (periodoVendasDTO.getDataFinal()== null ||  periodoVendasDTO.getDataFinal() == periodoVendasDTO.getDataInicial()|| periodoVendasDTO.getDataFinal().isBefore(periodoVendasDTO.getDataInicial())) {
-            throw new IllegalArgumentException("O código da categoria não pode ser nulo, nem igual a data inicial, muito menos antes da data inicial");
+            throw new IllegalArgumentException("A dataFinal não pode ser nulo, nem igual a data inicial, muito menos antes da data inicial");
         }
 
         if (periodoVendasDTO.getDataRetirada() == null) {

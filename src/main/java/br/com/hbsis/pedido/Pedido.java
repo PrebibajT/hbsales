@@ -98,6 +98,7 @@ public class Pedido {
         return "id{"+ id +'\'' +
                 ", uid='" + uid +'\'' +
                 ", status='" + status +'\'' +
+                ", itens='" + itens +'\'' +
                 ", id_fornecedor='" + pedidoFornecedor +'\'' +
                 ", id_funcionario='" + pedidoFuncionario +'\'' +
                 ", data_criacao='" + dataDeCriacao +'\'' +

@@ -20,6 +20,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -86,20 +87,20 @@ public class PedidoService {
          * - Incrementa e atribui ao próximo pedido
          */
 
-        Pedido pedido = new Pedido();
-
-        Pedido pedidoxx = iPedidoRepository.findByUid(pedido.getUid());
-
-
-        if(pedidoxx.getUid() == null){
-           String um = "1";
-          pedidoxx.setUid(Long.parseLong(um));
-
-
-        }else if (pedidoxx.getUid() >= 1){
-            pedidoDTO.setuUid(pedidoxx.getUid() + 1);
-        }
-
+//        Pedido pedido = new Pedido();
+//
+//        Pedido pedidoxx = iPedidoRepository.findByUid(pedido.getUid());
+//
+//
+//        if(pedidoxx.getUid() == null){
+//           String um = "1";
+//          pedidoxx.setUid(Long.parseLong(um));
+//
+//
+//        }else if (pedidoxx.getUid() >= 1){
+//            pedidoDTO.setuUid(pedidoxx.getUid() + 1);
+//        }
+//
         return pedidoDTO.getUid();
 
     }
@@ -162,30 +163,97 @@ public class PedidoService {
 
     public void reValidar (PedidoDTO pedidoDTO){
 
-       List<ItensDTO> itensDTOyy = pedidoDTO.getItens();
+        for(ItensDTO item : pedidoDTO.getItens()) {
 
-       Produtos produtosyy = produtosService.findById(itensDTOyy.get(0).getIdProduto());
+            Produtos produtosyy = produtosService.findById(item.getIdProduto());// pega o produto do pedido
 
-       PeriodoVendas periodoVendasyy = periodoVendasService.findAllByFornecedor(pedidoDTO.getIdFornecedor());
+            PeriodoVendas periodoVendasyy = periodoVendasService.findAllByFornecedor(pedidoDTO.getIdFornecedor());
 
-       Long idFornecedorPorFavor = produtosyy.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getId();
+            Long idFornecedorPorFavor = produtosyy.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getId();
 
-       if(!pedidoDTO.getIdFornecedor().equals(idFornecedorPorFavor)){
-           throw new IllegalArgumentException("O id do fornecedor do produto e do pedido são diferentes, azedo");
+            if(!pedidoDTO.getIdFornecedor().equals(idFornecedorPorFavor)){
+                throw new IllegalArgumentException("O id do fornecedor do produto e do pedido são diferentes, azedo");
+            }
+
+            if(!periodoVendasyy.getDataInicial().isAfter(pedidoDTO.getDataDeCriacao()) && !periodoVendasyy.getDataInicial().isBefore(pedidoDTO.getDataDeCriacao())){
+                throw new IllegalArgumentException ("Não tem periodo de venda vigente, olha no dicionário oq vigente é, e resolve");
+            }
         }
 
-        if(!periodoVendasyy.getDataInicial().isAfter(pedidoDTO.getDataDeCriacao()) && !periodoVendasyy.getDataInicial().isBefore(pedidoDTO.getDataDeCriacao())){
-            throw new IllegalArgumentException("Não tem periodo de venda vigente, olha no dicionário oq vigente é, e resolve");
+    }
+
+    public PedidoDTO statusLadrao (PedidoDTO pedidoDTO, Long id) {
+        Optional<Pedido> pedidoExistenteChato = this.iPedidoRepository.findById(id);
+
+        if (pedidoExistenteChato.isPresent()) {
+            Pedido pedidoChatoPacasete = pedidoExistenteChato.get();
+
+
+            PeriodoVendas periodoVendasyy = periodoVendasService.findAllByFornecedor(pedidoChatoPacasete.getPedidoFornecedor().getId());//pega o periodo de vendas do pedido
+
+
+            LOGGER.info(pedidoDTO.getStatus() +"----1----");
+            if (pedidoChatoPacasete.getStatus().contains("Ativo")) {
+
+
+                if (!periodoVendasyy.getDataInicial().isAfter(LocalDate.now())&& !periodoVendasyy.getDataInicial().isBefore(LocalDate.now())) {
+                    throw new IllegalArgumentException("Não tem periodo de venda vigente, olha no dicionário oq vigente é, e resolve");
+                }
+                pedidoChatoPacasete.setStatus(pedidoDTO.getStatus());
+
+            } else if (pedidoChatoPacasete.getStatus().contains("Cancelado") || pedidoChatoPacasete.getStatus().contains("Recebido")) {
+                throw new IllegalArgumentException("não da pra cancelar pedido q n ta ativo parça");
+            }
+
+            pedidoChatoPacasete = this.iPedidoRepository.save(pedidoChatoPacasete);
+            return PedidoDTO.of(pedidoChatoPacasete);
+
         }
+        throw new IllegalArgumentException("não tem oq updatar");
+
+    }
+
+    public PedidoDTO attLadrao (PedidoDTO pedidoDTO, Long id) {
+        Optional<Pedido> pedidoExistenteChato = this.iPedidoRepository.findById(id);
+
+
+        if (pedidoExistenteChato.isPresent()) {
+            Pedido pedidoChatoPacasete = pedidoExistenteChato.get();
+
+            PeriodoVendas periodoVendasyy = periodoVendasService.findAllByFornecedor(pedidoChatoPacasete.getPedidoFornecedor().getId());//pega o periodo de vendas do pedido
+
+            if (pedidoChatoPacasete.getStatus().contains("Ativo")) {
+
+                if (!periodoVendasyy.getDataInicial().isAfter(LocalDate.now())&& !periodoVendasyy.getDataInicial().isBefore(LocalDate.now())) {
+                    throw new IllegalArgumentException("Não tem periodo de venda vigente, olha no dicionário oq vigente é, e resolve");
+                }
+                Fornecedor fornecedorzz = this.fornecedorService.findByFornecedorId(pedidoDTO.getIdFornecedor());
+
+                pedidoChatoPacasete.setStatus(pedidoDTO.getStatus());
+                pedidoChatoPacasete.setDataDeCriacao(pedidoDTO.getDataDeCriacao());
+                pedidoChatoPacasete.setItens(convercaoItens(pedidoDTO.getItens(),pedidoChatoPacasete));
+
+                pedidoChatoPacasete.setPedidoFornecedor(fornecedorzz);
+
+
+            } else if (pedidoChatoPacasete.getStatus().contains("Cancelado") || pedidoChatoPacasete.getStatus().contains("Recebido")) {
+                throw new IllegalArgumentException("não da pra cancelar pedido q n ta ativo parça");
+            }
+
+            pedidoChatoPacasete = this.iPedidoRepository.save(pedidoChatoPacasete);
+            return PedidoDTO.of(pedidoChatoPacasete);
+
+        }
+        throw new IllegalArgumentException("não tem oq updatar");
 
     }
 
 
     public PedidoDTO update(PedidoDTO pedidoDTO, Long id){
-        Optional <Pedido> pedidoExistenteChato = this.iPedidoRepository.findById(id);
+        Optional <Pedido> pedidoExistenteChatao = this.iPedidoRepository.findById(id);
 
-        if(pedidoExistenteChato.isPresent()){
-            Pedido pedidoChatoPacas = pedidoExistenteChato.get();
+        if(pedidoExistenteChatao.isPresent()){
+            Pedido pedidoChatoPacas = pedidoExistenteChatao.get();
 
             LOGGER.info("Atualizando produtos.... id:[{}]", pedidoChatoPacas.getId());
             LOGGER.debug("Payload: {}", pedidoDTO);
@@ -193,11 +261,11 @@ public class PedidoService {
 
             Fornecedor fornecedorzz = this.fornecedorService.findByFornecedorId(pedidoDTO.getIdFornecedor());
 
-
+            pedidoChatoPacas.setStatus(pedidoDTO.getStatus());
             pedidoChatoPacas.setDataDeCriacao(pedidoDTO.getDataDeCriacao());
             pedidoChatoPacas.setItens(convercaoItens(pedidoDTO.getItens(),pedidoChatoPacas));
-            pedidoChatoPacas.setStatus(pedidoDTO.getStatus());
             pedidoChatoPacas.setPedidoFornecedor(fornecedorzz);
+
 
             pedidoChatoPacas = this.iPedidoRepository.save(pedidoChatoPacas);
             return PedidoDTO.of(pedidoChatoPacas);
@@ -213,10 +281,24 @@ public class PedidoService {
         this.iPedidoRepository.deleteById(id);
     }
 
-//    public Pedido pegaLadrao(Long idFuncionario){
-//
-//
-//
-//    }
+    public void pegaLadrao(Long idFuncionario){
+
+        List<Pedido> express = iPedidoRepository.findAll();
+
+        for (Pedido pedido: express) {
+
+            if(pedido.getPedidoFuncionario().getId().equals(idFuncionario)){
+
+                if(pedido.getStatus().contains("Ativo") || pedido.getStatus().contains("Cancelado"))
+                System.out.println(pedido.toString());
+
+
+            }else{
+                throw new IllegalArgumentException("O idFuncionario q vc busca n se encontra, tente novamente cadastrando ele");
+
+            }
+        }
+    }
+
 
 }

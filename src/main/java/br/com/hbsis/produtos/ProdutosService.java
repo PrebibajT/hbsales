@@ -467,6 +467,7 @@ public class ProdutosService {
         String tresTerceiros = fornecedor.getCnpj().substring(5,8);
         String penultimosQartos = fornecedor.getCnpj().substring(8,12);
         String ultimosDois = fornecedor.getCnpj().substring(12,14);
+        
         String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
                 penultimosQartos + "-" + ultimosDois;
 

@@ -10,5 +10,7 @@ interface IPedidoRepository extends JpaRepository<Pedido , Long> {
 
     Pedido findByUid(Long uid);
 
+    Pedido findByPedidoFuncionario_Id(Long idFuncionario);
+
 
 }
