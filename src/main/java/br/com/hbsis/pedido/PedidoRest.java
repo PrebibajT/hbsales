@@ -48,19 +48,27 @@ public class PedidoRest {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/funcionario/{id}")
     public void pegaLadrao(@PathVariable("id") Long idFuncionario){
         LOGGER.info("Mandando os pedidos do funcionario de ID: {}", idFuncionario);
 
         this.pedidoService.pegaLadrao(idFuncionario);
     }
 
-    @PutMapping("/alterStatus/{id}")
-    public PedidoDTO statusLadrao(@PathVariable("id") Long id, @RequestBody PedidoDTO pedidoDTO) {
+    @PutMapping("/statusRetira/{id}")
+    public PedidoDTO statusRetira(@PathVariable("id") Long id) {
         LOGGER.info("Recebendo Update para pedido/status de ID: {}", id);
-        LOGGER.debug("Payload: {}", pedidoDTO);
+        LOGGER.debug("Payload: {}", id);
 
-        return this.pedidoService.statusLadrao(pedidoDTO, id);
+        return this.pedidoService.statusRetira(id);
+    }
+
+    @PutMapping("/statusCancela/{id}")
+    public PedidoDTO statusCancela(@PathVariable("id") Long id) {
+        LOGGER.info("Recebendo Update para pedido/status de ID: {}", id);
+        LOGGER.debug("Payload: {}", id);
+
+        return this.pedidoService.statusCancela(id);
     }
 
     @PutMapping("/alterTudo/{id}")
