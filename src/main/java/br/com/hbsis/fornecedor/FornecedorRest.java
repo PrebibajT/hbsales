@@ -26,9 +26,9 @@ public class FornecedorRest {
 
         return save;
     }
+
     @GetMapping("/{id}")
     public FornecedorDTO find(@PathVariable("id") Long id) {
-
         LOGGER.info("Recebendo find by ID... id: [{}]", id);
 
         return this.fornecedorService.findById(id);
@@ -41,6 +41,7 @@ public class FornecedorRest {
 
         return this.fornecedorService.update(fornecedorDTO, id);
     }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
         LOGGER.info("Recebendo Delete para fornecedor de ID: {}", id);

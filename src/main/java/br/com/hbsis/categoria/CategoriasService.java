@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sun.util.resources.cldr.aa.CurrencyNames_aa;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -16,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class CategoriasService {
+
+   String codigo_categoria = "CAT";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CategoriasService.class);
 
@@ -29,7 +32,6 @@ public class CategoriasService {
 
 
     public CategoriasDTO save(CategoriasDTO categoriasDTO) {
-
         this.validate(categoriasDTO);
 
         LOGGER.info("Salvando produtos");
@@ -37,51 +39,26 @@ public class CategoriasService {
 
         Categorias categorias = new Categorias();
 
-        if(categoriasDTO.getCodigoCategoria().substring(0,1).equals("C") && categoriasDTO.getCodigoCategoria().length() == 10 ) {
 
-            categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
-
-        }else if (categoriasDTO.getCodigoCategoria().length() == 1 ) {
-            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
-            categorias.setCodigoCategoria(minhaVariavelConcatenada);
-
-        }
-        else if (categoriasDTO.getCodigoCategoria().length() == 2 ) {
-            String minhaVariavelConcatenada = "0" + categoriasDTO.getCodigoCategoria();
-            categorias.setCodigoCategoria(minhaVariavelConcatenada);
-
-        }
-        else if(categoriasDTO.getCodigoCategoria().length() == 3 ){
-            String minhaVariavelConcatenada = categoriasDTO.getCodigoCategoria();
-            categorias.setCodigoCategoria(minhaVariavelConcatenada);
-
-        }else{
-
-          throw new IllegalArgumentException("O código da categoria não é para ser maior q 3, seu mongol nem maior no reload, boa sorte kk");
-
-        }
-
-        Fornecedor byFornecedorId = fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
+        Fornecedor fornecedorByCategoria = fornecedorService.findByFornecedorId(categoriasDTO.getIdFornecedor());
 
         categorias.setNomeCategoria(categoriasDTO.getNomeCategoria());
-        categorias.setFornecedorCategoria(byFornecedorId);
+        categorias.setFornecedorCategoria(fornecedorByCategoria);
+        categorias.setCodigoCategoria(verificacaoCodigoCategoria(categoriasDTO));
 
-        if(categorias.getCodigoCategoria().substring(0,3).equals("CAT")) {
-
-            categorias = this.iCategoriasRepository.save(categorias);
-
-            return CategoriasDTO.of(categorias);
+        if (!categorias.getCodigoCategoria().substring(0, 3).equals(codigo_categoria)) {
 
 
-        }else{
+            categorias.setCodigoCategoria(this.geradorCodigoCategoria(fornecedorByCategoria.getCnpj(), categoriasDTO));
 
-            categorias.setCodigoCategoria(this.reValidate(byFornecedorId, categoriasDTO));
-
-            categorias = this.iCategoriasRepository.save(categorias);
-
-            return CategoriasDTO.of(categorias);
         }
+        categorias = this.iCategoriasRepository.save(categorias);
+        return CategoriasDTO.of(categorias);
 
+    }
+
+    private boolean verificacaoParaImportacao(CategoriasDTO categoriasDTO) {
+        return categoriasDTO.getCodigoCategoria().substring(0, 1).equals("C") && categoriasDTO.getCodigoCategoria().length() == 10;
     }
 
 
@@ -95,10 +72,10 @@ public class CategoriasService {
         throw new IllegalArgumentException(String.format("id  %s não existe", id));
     }
 
-    public Optional <Categorias> findByCodigoCategoria (String codigoCategoria){
-            Optional<Categorias> codigoQTem = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
+    public Optional<Categorias> findByCodigoCategoria(String codigoCategoria) {
+        Optional<Categorias> codigoQTem = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
 
-            return codigoQTem;
+        return codigoQTem;
     }
 
 
@@ -122,27 +99,53 @@ public class CategoriasService {
     }
 
 
-    public Categorias findById (Long id){
-        Optional <Categorias> idHumido = this.iCategoriasRepository.findById(id);
+    public Categorias findById(Long id) {
+        Optional<Categorias> idHumido = this.iCategoriasRepository.findById(id);
 
         return idHumido.get();
 
     }
 
-    public Categorias findByCodigoCategorias (String codigoCategoria){
-        Optional <Categorias> codigoHumido = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
+    public Categorias findByCodigoCategorias(String codigoCategoria) {
+        Optional<Categorias> codigoHumido = this.iCategoriasRepository.findByCodigoCategoria(codigoCategoria);
 
         return codigoHumido.get();
 
     }
 
+    public String verificacaoCodigoCategoria(CategoriasDTO categoriasDTO){
 
-    public String reValidate (Fornecedor fornecedor, CategoriasDTO categoriasDTO){
+        Categorias categorias = new Categorias();
 
-       String subCNPJ= fornecedor.getCnpj();
+        if (verificacaoParaImportacao(categoriasDTO)) {
+            categorias.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
 
-       String restinhoSemMascara = subCNPJ.substring(13,15) +subCNPJ.substring(16,18);
-       String codigoCompleto = "CAT" + restinhoSemMascara + categoriasDTO.getCodigoCategoria();
+        } else if (categoriasDTO.getCodigoCategoria().length() == 1) {
+            String minhaVariavelConcatenada = "0" + "0" + categoriasDTO.getCodigoCategoria();
+            categorias.setCodigoCategoria(minhaVariavelConcatenada);
+
+        } else if (categoriasDTO.getCodigoCategoria().length() == 2) {
+            String minhaVariavelConcatenada = "0" + categoriasDTO.getCodigoCategoria();
+            categorias.setCodigoCategoria(minhaVariavelConcatenada);
+
+        } else if (categoriasDTO.getCodigoCategoria().length() == 3) {
+            String minhaVariavelConcatenada = categoriasDTO.getCodigoCategoria();
+            categorias.setCodigoCategoria(minhaVariavelConcatenada);
+
+        } else {
+            throw new IllegalArgumentException("O código da categoria não deve ser maior que 3");
+        }
+
+        return  categorias.getCodigoCategoria();
+    }
+
+
+    public String geradorCodigoCategoria(String cnpj, CategoriasDTO categoriasDTO) {
+
+        String subCNPJ =cnpj;
+
+        String restinhoSemMascara = subCNPJ.substring(13, 15) + subCNPJ.substring(16, 18);
+        String codigoCompleto = "CAT" + restinhoSemMascara + categoriasDTO.getCodigoCategoria();
 
         return codigoCompleto;
 
@@ -167,14 +170,14 @@ public class CategoriasService {
 
             categoriasExistente = this.iCategoriasRepository.save(categoriasExistente);
 
-            if(categoriasDTO.getCodigoCategoria().substring(0,3).equals("CAT")) {
+            if (categoriasDTO.getCodigoCategoria().substring(0, 3).equals("CAT")) {
 
                 categoriasExistente.setCodigoCategoria(categoriasDTO.getCodigoCategoria());
 
                 return CategoriasDTO.of(categoriasExistente);
 
-            }else{
-                categoriasExistente.setCodigoCategoria(this.reValidate(categoriasExistente.getFornecedorCategoria(), categoriasDTO));
+            } else {
+                categoriasExistente.setCodigoCategoria(this.geradorCodigoCategoria(categoriasExistente.getFornecedorCategoria().getCnpj(), categoriasDTO));
 
                 return CategoriasDTO.of(categoriasExistente);
             }
@@ -200,13 +203,13 @@ public class CategoriasService {
 
         PrintWriter myWriter = response.getWriter();
 
-        myWriter.append("Codigo" + ";" + "Nome" +";" + "Razão social" + ";" + "CNPJ");
+        myWriter.append("Codigo" + ";" + "Nome" + ";" + "Razão social" + ";" + "CNPJ");
 
         for (Categorias categorias : express) {
 
-            myWriter.append("\n" +categorias.getCodigoCategoria()+ ";");
+            myWriter.append("\n" + categorias.getCodigoCategoria() + ";");
             myWriter.append(categorias.getNomeCategoria() + ";");
-            myWriter.append(categorias.getFornecedorCategoria().getRazaoSocial()+ ";");
+            myWriter.append(categorias.getFornecedorCategoria().getRazaoSocial() + ";");
             myWriter.append(categorias.getFornecedorCategoria().getCnpj());
 
 
@@ -225,37 +228,26 @@ public class CategoriasService {
         String splitBy = ";";
 
         line = myReader.readLine();
-        while ((line = myReader.readLine()) != null){
+        while ((line = myReader.readLine()) != null) {
             String[] categoria = line.split(splitBy);
 
-           categorias.setCodigoCategoria(categoria[0]);
-           categorias.setNomeCategoria(categoria[1]);
+            categorias.setCodigoCategoria(categoria[0]);
+            categorias.setNomeCategoria(categoria[1]);
             String cnpjMasked = categoria[3];
-            String desmascaradoCnpj = cnpjMasked.substring(0,2) + cnpjMasked.substring(3,6) +cnpjMasked.substring(7,10) +
-                                      cnpjMasked.substring(11,15) +cnpjMasked.substring(16,18) ;
+            String desmascaradoCnpj = cnpjMasked.substring(0, 2) + cnpjMasked.substring(3, 6) + cnpjMasked.substring(7, 10) +
+                    cnpjMasked.substring(11, 15) + cnpjMasked.substring(16, 18);
 
             Optional<Fornecedor> fornecedor = this.fornecedorService.findByCnpj(desmascaradoCnpj);
 
-                    if(fornecedor.isPresent()){
+            if (fornecedor.isPresent()) {
 
-                        categorias.setFornecedorCategoria(fornecedor.get());
-                        this.iCategoriasRepository.save(categorias);
+                categorias.setFornecedorCategoria(fornecedor.get());
+                this.iCategoriasRepository.save(categorias);
 
-                    }
+            }
 
 
         }
     }
 
-
-//    String doisPrimeiros = fornecedor.getCnpj().substring(0,2);
-//    String tresSegundos= fornecedor.getCnpj().substring(2,5);
-//    String tresTerceiros = fornecedor.getCnpj().substring(5,8);
-//    String penultimosQartos = fornecedor.getCnpj().substring(8,12);
-//    String ultimosDois = fornecedor.getCnpj().substring(12,14);
-//    String cnpjDisfarcado = doisPrimeiros + "." + tresSegundos + "." + tresTerceiros + "/" +
-//            penultimosQartos + "-" + ultimosDois;
-//
-//
-//        fornecedor.setCnpj(cnpjDisfarcado);
 }
