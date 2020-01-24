@@ -16,8 +16,6 @@ import br.com.hbsis.produtos.ProdutosService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -50,9 +48,8 @@ public class PedidoService {
     }
 
     public PedidoDTO save(PedidoDTO pedidoDTO) {
-        this.arrumaUid(pedidoDTO);
         this.validate(pedidoDTO);
-        this.reValidar(pedidoDTO);
+
 
         LOGGER.info("Salvando pedidos");
         LOGGER.debug("Pedidos: {}", pedidoDTO);
@@ -74,7 +71,7 @@ public class PedidoService {
         List<Item> a = pedido.getItens();
 
         this.validaAPI(InvoiceDTO.of(pedido, a));
-        this.simpleMailMessage(pedido.getPedidoFuncionario());
+       // this.simpleMailMessage(pedido.getPedidoFuncionario());
 
         return PedidoDTO.of(pedido);
     }
@@ -82,34 +79,28 @@ public class PedidoService {
 
     public Long arrumaUid(PedidoDTO pedidoDTO) {
 
-        if (true) {
-            return ((long) new Random().nextInt(100000));
+        //return new Random().nextInt(100000));
+
+        Pedido pedidoMax = iPedidoRepository.pedidoWhitIdMax();
+
+        if(String.valueOf(pedidoMax.getUid()).isEmpty()){
+           String um = "1";
+            pedidoDTO.setuUid(Long.parseLong(um));
+
+        }else if (pedidoMax.getUid() >= 1){
+            pedidoDTO.setuUid(pedidoMax.getUid() + 1);
         }
 
-        /**
-         * Possui unicidade de código dentro do banco
-         * - A Aplicação deveria gerar esse código antes de mandar pro banco
-         * - Necessário fazer uma consulta dentro do banco pra pegar o último valor inserido
-         * - Incrementa e atribui ao próximo pedido
-         */
-
-//        Pedido pedido = new Pedido();
-//
-//        Pedido pedidoxx = iPedidoRepository.findByUid(pedido.getUid());
-//
-//
-//        if(pedidoxx.getUid() == null){
-//           String um = "1";
-//          pedidoxx.setUid(Long.parseLong(um));
-//
-//
-//        }else if (pedidoxx.getUid() >= 1){
-//            pedidoDTO.setuUid(pedidoxx.getUid() + 1);
-//        }
-//
         return pedidoDTO.getUid();
 
     }
+
+    /**
+     * Possui unicidade de código dentro do banco
+     * - A Aplicação deveria gerar esse código antes de mandar pro banco
+     * - Necessário fazer uma consulta dentro do banco pra pegar o último valor inserido
+     * - Incrementa e atribui ao próximo pedido
+     */
 
     private List<Item> convercaoItens(List<ItensDTO> itensDTOS, Pedido pedido) {
         List<Item> itens = new ArrayList<>();
@@ -160,17 +151,6 @@ public class PedidoService {
             throw new IllegalArgumentException("O código da categoria não pode ser nulo");
         }
 
-    }
-
-
-    public Pedido findById(Long id) {
-        Optional<Pedido> idHumido = this.iPedidoRepository.findById(id);
-        return idHumido.get();
-
-    }
-
-
-    public void reValidar(PedidoDTO pedidoDTO) {
 
         for (ItensDTO item : pedidoDTO.getItens()) {
 
@@ -188,6 +168,13 @@ public class PedidoService {
                 throw new IllegalArgumentException("Não tem periodo de venda vigente, olha no dicionário oq vigente é, e resolve");
             }
         }
+
+    }
+
+
+    public Pedido findById(Long id) {
+        Optional<Pedido> idHumido = this.iPedidoRepository.findById(id);
+        return idHumido.get();
 
     }
 
@@ -267,7 +254,7 @@ public class PedidoService {
     }
 
 
-    @Bean
+
     public void simpleMailMessage(Funcionario funcionario) {
 
         SimpleMailMessage sendSimpleMessage = new SimpleMailMessage();
