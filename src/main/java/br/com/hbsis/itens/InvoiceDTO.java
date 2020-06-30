@@ -71,6 +71,4 @@ public class InvoiceDTO {
                 InvoiceItem.of(items)
         );
     }
-
-
 }
