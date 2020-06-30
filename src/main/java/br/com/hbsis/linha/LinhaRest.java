@@ -24,12 +24,10 @@ public class LinhaRest {
     public LinhaDTO save(@RequestBody LinhaDTO linhaDTO){
         LOGGER.info("Recebendo solicitação de persistência de linha...");
         LOGGER.debug("Payload: {}", linhaDTO);
-
         LinhaDTO save = this.linhaService. save(linhaDTO);
-
         return save;
-
     }
+    
     @GetMapping("/{id}")
     public LinhaDTO find(@PathVariable("id")Long id ){
         LOGGER.info("Recebendo find by ID... id: [{}]", id);
@@ -53,11 +51,9 @@ public class LinhaRest {
 
     @GetMapping("/exportar")
     public void exportar(HttpServletResponse response) throws Exception{
-
         LOGGER.info("Exportando categorias");
-
+        
         this.linhaService.exportar(response);
-
     }
 
     @GetMapping("/importar")
@@ -67,4 +63,3 @@ public class LinhaRest {
         this.linhaService.importar(file);
     }
 }
-
