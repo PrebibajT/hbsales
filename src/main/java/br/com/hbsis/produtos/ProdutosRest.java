@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -46,11 +45,9 @@ public class ProdutosRest {
 
     @GetMapping("/exportar")
     public void exportar(HttpServletResponse response) throws Exception{
-
         LOGGER.info("Exportando produtos");
 
         this.produtosService.exportar(response);
-
     }
 
     @PostMapping("/importar")
@@ -58,8 +55,8 @@ public class ProdutosRest {
         LOGGER.info("Importando produtos");
 
         this.produtosService.importar(file);
-
-}
+    }
+    
     @PostMapping("/importarOmega/{idFornecedor}")
     public void  importarOmega(@PathVariable("idFornecedor") Long idFornecedor, @RequestParam("file") MultipartFile file ) throws Exception {
         LOGGER.info("Importando produtos  O M E G A ");
