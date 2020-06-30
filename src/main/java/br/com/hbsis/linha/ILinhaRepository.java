@@ -10,4 +10,10 @@ interface ILinhaRepository  extends JpaRepository<Linha, Long> {
 
     Optional <Linha> findByCodigoLinha(String codigoLinha);
 
+    
+    
+    
+    
+    
+    
 }
