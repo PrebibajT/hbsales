@@ -217,30 +217,30 @@ public class PedidoService {
         throw new IllegalArgumentException("não há o que atualizar");
     }
 
-    public PedidoDTO attLadrao(PedidoDTO pedidoDTO, Long id) {
-        Optional<Pedido> pedidoExistenteChato = this.iPedidoRepository.findById(id);
+    public PedidoDTO atualizaTudo(PedidoDTO pedidoDTO, Long id) {
+        Optional<Pedido> pedidoExistente = this.iPedidoRepository.findById(id);
 
 
-        if (pedidoExistenteChato.isPresent()) {
-            Pedido pedidoChatoPacasete = pedidoExistenteChato.get();
-            PeriodoVendas periodoVendasAtual = periodoVendasService.findAllByFornecedor(pedidoChatoPacasete.getPedidoFornecedor().getId());//pega o periodo de vendas do pedido
+        if (pedidoExistente.isPresent()) {
+            Pedido pedidoReal = pedidoExistente.get();
+            PeriodoVendas periodoVendasAtual = periodoVendasService.findAllByFornecedor(pedidoReal.getPedidoFornecedor().getId());//pega o periodo de vendas do pedido
 
-            if (pedidoChatoPacasete.getStatus().contains("Ativo")) {
+            if (pedidoReal.getStatus().contains("Ativo")) {
                 if (!periodoVendasAtual.getDataInicial().isAfter(LocalDate.now()) && !periodoVendasAtual.getDataInicial().isBefore(LocalDate.now())) {
                     throw new IllegalArgumentException("Não tem periodo de venda vigente");
                 }
-                Fornecedor fornecedorzz = this.fornecedorService.findByFornecedorId(pedidoDTO.getIdFornecedor());
+                Fornecedor fornecedorDoPedido = this.fornecedorService.findByFornecedorId(pedidoDTO.getIdFornecedor());
 
-                pedidoChatoPacasete.setStatus(pedidoDTO.getStatus());
-                pedidoChatoPacasete.setDataDeCriacao(pedidoDTO.getDataDeCriacao());
-                pedidoChatoPacasete.setItens(convercaoItens(pedidoDTO.getItens(), pedidoChatoPacasete));
-                pedidoChatoPacasete.setPedidoFornecedor(fornecedorzz);
+                pedidoReal.setStatus(pedidoDTO.getStatus());
+                pedidoReal.setDataDeCriacao(pedidoDTO.getDataDeCriacao());
+                pedidoReal.setItens(convercaoItens(pedidoDTO.getItens(), pedidoChatoPacasete));
+                pedidoReal.setPedidoFornecedor(fornecedorDoPedido);
 
-            } else if (pedidoChatoPacasete.getStatus().contains("Cancelado") || pedidoChatoPacasete.getStatus().contains("Recebido")) {
+            } else if (pedidoReal.getStatus().contains("Cancelado") || pedidoReal.getStatus().contains("Recebido")) {
                 throw new IllegalArgumentException("não da pra cancelar pedido q n ta ativo");
             }
-            pedidoChatoPacasete = this.iPedidoRepository.save(pedidoChatoPacasete);
-            return PedidoDTO.of(pedidoChatoPacasete);
+            pedidoReal = this.iPedidoRepository.save(pedidoReal);
+            return PedidoDTO.of(pedidoReal);
         }
         throw new IllegalArgumentException("não tem oq updatar");
     }
@@ -274,12 +274,12 @@ public class PedidoService {
             LOGGER.debug("Payload: {}", pedidoDTO);
             LOGGER.debug("Produtos existente: {}", pedidoReal);
 
-            Fornecedor fornecedorzz = this.fornecedorService.findByFornecedorId(pedidoDTO.getIdFornecedor());
+            Fornecedor fornecedorDoPedido = this.fornecedorService.findByFornecedorId(pedidoDTO.getIdFornecedor());
 
             pedidoReal.setStatus(pedidoDTO.getStatus());
             pedidoReal.setDataDeCriacao(pedidoDTO.getDataDeCriacao());
             pedidoReal.setItens(convercaoItens(pedidoDTO.getItens(), pedidoReal));
-            pedidoReal.setPedidoFornecedor(fornecedorzz);
+            pedidoReal.setPedidoFornecedor(fornecedorDoPedido);
 
             pedidoReal = this.iPedidoRepository.save(pedidoReal);
             return PedidoDTO.of(pedidoReal);
@@ -295,7 +295,7 @@ public class PedidoService {
     }
 
 
-    public void pegaLadrao(Long idFuncionario) {
+    public void pegaFuncionario(Long idFuncionario) {
 
         List<Pedido> express = iPedidoRepository.findAll();
         for (Pedido pedido : express) {
