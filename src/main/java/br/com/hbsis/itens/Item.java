@@ -65,8 +65,5 @@ public class Item {
                 ", id_produto='" + idProduto +'\'' +
                 ", quantidade='" + quantidade +'\'' +
                 '}';
-
     }
-
-
 }
