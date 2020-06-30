@@ -57,21 +57,10 @@ public class PeriodoVendasService {
         }
                 if (periodoVendasDTO.getIdFornecedor().equals(periodoVendasFornecedor.getFornecedorPeriodo().getId())) {
 
-                    if (periodoVendasDTO.getDataInicial().isAfter(periodoVendasFornecedor.getDataInicial()) && periodoVendasDTO.getDataInicial().isBefore(periodoVendasxx.getDataFinal())){
-                        throw  new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, maxime");
-                    }
-                        if(periodoVendasDTO.getDataFinal().isBefore(periodoVendasFornecedor.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(periodoVendasxx.getDataInicial())) {
-                            throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 4");
-                        }
-                            if(periodoVendasDTO.getDataInicial().equals(periodoVendasFornecedor.getDataInicial())){
-                                  throw  new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 3");
-                            }
-                                if(periodoVendasDTO.getDataFinal().equals(periodoVendasFornecedor.getDataFinal())){
-                                    throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 5");
-                                }
-                                else{
-
-                        periodoVendas.setFornecedorPeriodo(fornecedorxx);
+                     if(periodoVendasDTO.getDataInicial().isBefore(PeriodoVendasAtual.getDataInicial()) && periodoVendasDTO.getDataFinal().isBefore(PeriodoVendasAtual.getDataInicial()) || 
+                     periodoVendasDTO.getDataInicial().isAfter(PeriodoVendasAtual.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(PeriodoVendasAtual.getDataFinal())){
+                         
+                        periodoVendas.setFornecedorPeriodo(periodoVendasFornecedor);
                         periodoVendas.setDataInicial(periodoVendasDTO.getDataInicial());
                         periodoVendas.setDataFinal(periodoVendasDTO.getDataFinal());
                         periodoVendas.setDataRetirada(periodoVendasDTO.getDataRetirada());
@@ -80,11 +69,12 @@ public class PeriodoVendasService {
                         periodoVendas = this.iPeriodoVendasRepository.save(periodoVendas);
 
                         return PeriodoVendasDTO.of(periodoVendas);
-                    }
-
+                         
+                     }                            
+                        
                 }else {
 
-                    periodoVendas.setFornecedorPeriodo(fornecedorxx);
+                    periodoVendas.setFornecedorPeriodo(periodoVendasFornecedor);
                     periodoVendas.setDataInicial(periodoVendasDTO.getDataInicial());
                     periodoVendas.setDataFinal(periodoVendasDTO.getDataFinal());
                     periodoVendas.setDataRetirada(periodoVendasDTO.getDataRetirada());
@@ -122,6 +112,7 @@ public class PeriodoVendasService {
         }
     }
 
+    
     public PeriodoVendasDTO update (PeriodoVendasDTO periodoVendasDTO, Long id) {
         Optional<PeriodoVendas> periodoVendasOptional = this.iPeriodoVendasRepository.findById(id);
 
@@ -131,7 +122,7 @@ public class PeriodoVendasService {
            if (periodoVendasAtual.getDataFinal().isAfter(LocalDate.now())) {
                throw new IllegalArgumentException("Já passou a data em que você pode alterar algo");
 
-           d}else {
+           }else {
 
                LOGGER.info("Atualizando produtos.... id:[{}]", periodoVendasAtual.getId());
                LOGGER.debug("Payload: {}", periodoVendasDTO);
@@ -158,14 +149,25 @@ public class PeriodoVendasService {
 
                    }else{
                      throw new IllegalArgumentException("Não é permitido nenhum tipo de conflito entre periodos de vendas iniciados");
-              }
+                  }
                                                                                                                
-            }
+            }else{
+                    periodoVendasAtual.setFornecedorPeriodo(fornecedor);
+                        periodoVendasAtual.setDataInicial(periodoVendasDTO.getDataInicial());
+                        periodoVendasAtual.setDataFinal(periodoVendasDTO.getDataFinal());
+                        periodoVendasAtual.setDataRetirada(periodoVendasDTO.getDataRetirada());
+                        periodoVendasAtual.setDescricao(periodoVendasDTO.getDescricao());
+
+                        periodoVendasAtual = this.iPeriodoVendasRepository.save(periodoVendasAtual);
+
+                        return PeriodoVendasDTO.of(periodoVendasAtual);              
+
                    
          }
           throw new IllegalArgumentException(String.format("ID %s não existe", id));
      }
         
+             
     public PeriodoVendas findById (Long id){
         Optional<PeriodoVendas> idPeriodo = this.iPeriodoVendasRepository.findById(id);
 
