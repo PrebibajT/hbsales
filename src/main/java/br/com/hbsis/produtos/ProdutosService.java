@@ -53,20 +53,18 @@ public class ProdutosService {
         Produtos produtos = new Produtos();
 
         produtos.setCodigoProduto(produtosDTO.getCodigoProduto().toUpperCase());
-        StringBuilder produtationConcatenation = new StringBuilder();
+        StringBuilder codigoProdutoConcatenando = new StringBuilder();
 
         if (produtosDTO.getCodigoProduto().length() != 10) {
             int cata = 10 - produtosDTO.getCodigoProduto().length();
 
             for (int i = 0; i < cata; i++) {
-                produtationConcatenation.append("0");
-                System.out.println(produtationConcatenation);
-
+                codigoProdutoConcatenando.append("0");
             }
 
-            String concatenationProdutation = produtationConcatenation.toString() + produtosDTO.getCodigoProduto();
-            concatenationProdutation = concatenationProdutation.toUpperCase();
-            produtos.setCodigoProduto(concatenationProdutation);
+            String codigoProdutoConcatenado = codigoProdutoConcatenando.toString() + produtosDTO.getCodigoProduto();
+            codigoProdutoConcatenadoU = codigoProdutoConcatenado.toUpperCase();
+            produtos.setCodigoProduto(codigoProdutoConcatenadoU);
         }
 
         Linha linha = this.linhaService.findByIdLinha(produtosDTO.getIdLinha());
@@ -89,39 +87,39 @@ public class ProdutosService {
         LOGGER.info("Validando produtos");
 
         if (produtosDTO == null) {
-            throw new IllegalArgumentException("produtosDTO  não é pra ser nulo, animal");
+            throw new IllegalArgumentException("produtosDTO  não é pra ser nulo");
         }
 
         if (StringUtils.isEmpty(produtosDTO.getCodigoProduto())) {
-            throw new IllegalArgumentException("O codigo do produto não pode ser nulo, burrão");
+            throw new IllegalArgumentException("O codigo do produto não pode ser nulo");
         }
 
         if (StringUtils.isEmpty(produtosDTO.getNomeProduto())) {
-            throw new IllegalArgumentException("O nome do produto ta nullo ");
+            throw new IllegalArgumentException("O nome do produto não pode ser nulo");
         }
 
         if (produtosDTO.getPreco() == null) {
-            throw new IllegalArgumentException("O preco do produto ta nullo");
+            throw new IllegalArgumentException("O preco do produto não pode ser nulo");
         }
 
         if (produtosDTO.getIdLinha() == null) {
-            throw new IllegalArgumentException("O idLinha do produto ta nulo, cara de coruja seca");
+            throw new IllegalArgumentException("O idLinha do produto não pode ser nulo");
         }
 
         if (produtosDTO.getUnidadeCaixa() == null) {
-            throw new IllegalArgumentException("O idLinha do produto ta nulo, vo te bater mlk");
+            throw new IllegalArgumentException("O idLinha do produto não pode ser nulo");
         }
 
         if (produtosDTO.getPesoUnidade() == null) {
-            throw new IllegalArgumentException("O peso da Unidade do produto ta nulo, tanso");
+            throw new IllegalArgumentException("O peso da Unidade do produto não pode ser nulo");
         }
 
         if (StringUtils.isEmpty(produtosDTO.getValidade().toString())) {
-            throw new IllegalArgumentException("A validade não pode ser nula, mongol");
+            throw new IllegalArgumentException("A validade não pode ser nula");
         }
 
         if (StringUtils.isEmpty(produtosDTO.getPesoMedida())) {
-            throw new IllegalArgumentException("O peso da medida do produto ta nulo, seu burro");
+            throw new IllegalArgumentException("O peso da medida do produto não pode ser nulo");
 
 
         } else if (produtosDTO.getPesoMedida().equals("mg")) {
@@ -134,7 +132,7 @@ public class ProdutosService {
             LOGGER.info("Ok é em Kg");
 
         } else {
-            throw new IllegalArgumentException("O peso da medida do produto não vai aceitar isso, seu fudido");
+            throw new IllegalArgumentException("O peso da medida do produto só vai aceitar: mg / kg / g");
         }
     }
 
@@ -176,9 +174,9 @@ public class ProdutosService {
     }
 
     public Produtos findById (Long id){
-        Optional<Produtos> idHumido = this.iProdutosRepository.findById(id);
+        Optional<Produtos> idProduto = this.iProdutosRepository.findById(id);
 
-        return idHumido.get();
+        return idProduto.get();
 
     }
 
@@ -194,8 +192,6 @@ public class ProdutosService {
         miEscritor.append("Codigo produto" + ";" + "Nome" + ";" + "Preço" + ";" + "Unidades de caixa" + ";" + "Peso por unidade" + ";" + "Validade" +
                 ";" + "Código linha" + ";" + "Nome linha" + ";" + "Código categoria" + ";" + "Nome categoria" + ";" + "CNPJ fornecedor"
                 + ";" + "Razão social");
-
-
 
         for (Produtos produtos : express) {
 
@@ -221,15 +217,10 @@ public class ProdutosService {
             miEscritor.append(produtos.getLinhaCategoria().getCategoriaLinha().getFornecedorCategoria().getRazaoSocial());
 
             miEscritor.flush();
-
         }
-
     }
 
     public void importar(MultipartFile file) throws IOException {
-
-        //    /-----------------------Produtos---------------------------\         /-------Linha-------\    \\
-        //  Codigo produto || Nome || Preço || Unidades de caixa || Validade ||| Código linha || Nome linha  \\
 
         Produtos produtos = new Produtos();
 
@@ -241,8 +232,7 @@ public class ProdutosService {
         line = miLector.readLine();
         while ((line = miLector.readLine()) != null) {
             String[] produto = line.split(splitBy);
-
-            //não azedou
+      
             produtos.setCodigoProduto(produto[0]);
             produtos.setNomeProduto(produto[1]);
             produtos.setPreco(Double.parseDouble(produto[2]));
@@ -260,14 +250,9 @@ public class ProdutosService {
             produtos.setValidade(LocalDate.parse(data));
             produtos.setLinhaCategoria(linha.get());
 
-
             this.iProdutosRepository.save(produtos);
-            LOGGER.info("Tudo ok mestre, por enquanto");
-
         }
-
     }
-
 
     public void importarOmega(MultipartFile file, Long idFornecedor) throws IOException {
 
@@ -289,7 +274,7 @@ public class ProdutosService {
             Optional <Linha> linhaFornecedor = linhaService.findByCodigoLinha(produtoOMEGA[6]);
             Optional <Produtos> produtosFornecedor = this.iProdutosRepository.existsByCodigoProduto(produtoOMEGA[0]);
 
-                if (!categoriasFornecedor.isPresent()) { //cria um novo
+                if (!categoriasFornecedor.isPresent()) { 
                     LOGGER.info("criando nova categoria ");
 
                     categoriasDTO.setCodigoCategoria(produtoOMEGA[8]);
@@ -298,7 +283,7 @@ public class ProdutosService {
 
                     categoriasService.save(categoriasDTO);
 
-                } else  {//update
+                } else  {
                     LOGGER.info("atualizando categoria já existente ");
 
                     Long idCat = categoriasService.findByCodigoCategorias(produtoOMEGA[8]).getId();
@@ -314,10 +299,7 @@ public class ProdutosService {
                     categoriasService.update( categoriasDTO, idCat);
 
                 }
-
-
-                // ERRO AQ
-                if (!linhaFornecedor.isPresent()) { //cria um novo
+                  if (!linhaFornecedor.isPresent()) { 
                     LOGGER.info("criando nova linha ");
 
                     Long idCat = categoriasService.findByCodigoCategorias(produtoOMEGA[8]).getId();
@@ -329,7 +311,7 @@ public class ProdutosService {
                     linhaService.save(linhaDTO);
 
 
-                } else {//update
+                } else {
                     LOGGER.info("atualizando linha já existente ");
 
                     Long idLin = linhaService.findByCodigoLinhas(produtoOMEGA[6]).getId();
@@ -340,9 +322,7 @@ public class ProdutosService {
                     linhaDTO.setIdCategoria(idCat);
 
                     linhaService.update(linhaDTO, idLin);
-
                 }
-
 
                 if (!produtosFornecedor.isPresent()){ //cria um novo
 
@@ -360,26 +340,21 @@ public class ProdutosService {
                     String data = produtoOMEGA[5]; //  09/02/2020
 
                     String dia = data.substring(0,2);
-                        LOGGER.info(dia);
-
                     String mes = data.substring(3,5);
-                    LOGGER.info(mes);
-
                     String ano = data.substring(6,10);
-                    LOGGER.info(ano);
+                  
+                    String dataCompleta = ano + "-" + mes + "-" + dia;
 
-                    String dataChata = ano + "-" + mes + "-" + dia;
-
-                    LocalDate dataInsuportavel = LocalDate.parse(dataChata);
+                    LocalDate dataFinal = LocalDate.parse(dataCompleta);
 
                     produtosDTO.setPesoMedida(medida);
                     produtosDTO.setIdLinha(idLin);
                     produtosDTO.setPesoUnidade(Double.parseDouble(peso));
-                    produtosDTO.setValidade(dataInsuportavel);
+                    produtosDTO.setValidade(dataFinal);
 
                     save(produtosDTO);
 
-                } else {//update   erro
+                } else {
 
                   Long idPro = this.iProdutosRepository.findByCodigoProduto(produtoOMEGA[0]).getId();
                   Long idLin = linhaService.findByCodigoLinhas(produtoOMEGA[6]).getId();
@@ -396,26 +371,20 @@ public class ProdutosService {
                     String dia = data.substring(0,2);
                     String mes = data.substring(3,5);
                     String ano = data.substring(6,10);
-                    String dataChata = ano + "-" + mes + "-" + dia;
+                    String dataCompleta = ano + "-" + mes + "-" + dia;
 
-                    LocalDate dataInsuportavel = LocalDate.parse(dataChata);
+                    LocalDate dataFinal = LocalDate.parse(dataChata);
 
                     produtosDTO.setPesoMedida(medida);
                     produtosDTO.setPesoUnidade(Double.parseDouble(peso));
-                    produtosDTO.setValidade(dataInsuportavel);
+                    produtosDTO.setValidade(dataFinal);
                     produtosDTO.setIdLinha(idLin);
 
-
-                    LOGGER.info("atualizando produtos já existente ");
+                    LOGGER.info("atualizando produtos já existente");
 
                     update(produtosDTO, idPro);
-
                 }
-
-
         }
-
-
     }
 
     public void exportarFornecedorProduto(HttpServletResponse response, Long idFornecedor) throws IOException {
@@ -460,7 +429,6 @@ public class ProdutosService {
 
         Fornecedor fornecedor = fornecedorService.findByFornecedorId(idFornecedor);
         Funcionario funcionario = funcionarioService.findByIdFuncionario(idFuncionario);
-
 
         String doisPrimeiros = fornecedor.getCnpj().substring(0,2);
         String tresSegundos= fornecedor.getCnpj().substring(2,5);
