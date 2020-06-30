@@ -17,7 +17,6 @@ public class ItensDTO {
         this.quantidadeProduto = quantidadeProduto;
     }
 
-
     public Long getIdPedido() {
         return idPedido;
     }
@@ -59,8 +58,4 @@ public class ItensDTO {
 
         );
     }
-
-
-
 }
-
