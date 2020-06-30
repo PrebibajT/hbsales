@@ -26,7 +26,6 @@ public class LinhaService {
     public LinhaService(ILinhaRepository ilinhaRepository, CategoriasService categoriasService) {
         this.iLinhaRepository = ilinhaRepository;
         this.categoriasService = categoriasService;
-
     }
 
     public LinhaDTO save(LinhaDTO linhaDTO) {
@@ -39,24 +38,19 @@ public class LinhaService {
         Linha linha = new Linha();
 
         linha.setCodigoLinha(linhaDTO.getCodigoLinha().toUpperCase());
-        StringBuilder concatenationVariation = new StringBuilder();
+        StringBuilder variavelConcatenada = new StringBuilder();
 
         if (linha.getCodigoLinha().length() != 10) {
             int resto = 10 - linhaDTO.getCodigoLinha().length();
 
-
             for (int i = 0; i < resto; i++) {
-                concatenationVariation.append("0");
-
-
+                variavelConcatenada.append("0");
             }
 
-            String variationConcdatenation = concatenationVariation.toString() + linhaDTO.getCodigoLinha();
-            variationConcdatenation = variationConcdatenation.toUpperCase();
-
-            linha.setCodigoLinha(variationConcdatenation);
+            String  = variavelPosConcatenada.toString() + linhaDTO.getCodigoLinha();
+         
+            linha.setCodigoLinha(variavelPosConcatenada);
             System.out.println(linhaDTO.getCodigoLinha());
-
 
         }else if(linhaDTO.getCodigoLinha().length() == 10) {
 
@@ -65,29 +59,22 @@ public class LinhaService {
             linha.setNome(linhaDTO.getNome());
             linha.setCategoriaLinha(categorias);
 
-
             linha = this.iLinhaRepository.save(linha);
 
             return LinhaDTO.of(linha);
 
         }else{
-
             throw new IllegalArgumentException("Fudeu bahia");
         }
 
-
         Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
-
 
         linha.setNome(linhaDTO.getNome());
         linha.setCategoriaLinha(categorias);
 
-
         linha = this.iLinhaRepository.save(linha);
 
         return LinhaDTO.of(linha);
-
-
     }
 
     private void validate(LinhaDTO linhaDTO) {
@@ -101,7 +88,6 @@ public class LinhaService {
             throw new IllegalArgumentException("O código da linha não pode ser nulo");
         }
 
-
         if (linhaDTO.getIdCategoria() == null) {
             throw new IllegalArgumentException("A linha da categoria não pode ser nulo");
         }
@@ -111,8 +97,7 @@ public class LinhaService {
         }
 
     }
-
-
+    
     public LinhaDTO findById(Long id) {
         Optional<Linha> linhaSuper = this.iLinhaRepository.findById(id);
 
@@ -123,42 +108,33 @@ public class LinhaService {
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
 
-
     public Optional <Linha> findByCodigoLinha(String codigoLinha) {
         Optional<Linha> linhaOptional = this.iLinhaRepository.findByCodigoLinha(codigoLinha);
 
             return linhaOptional;
-
     }
-
 
     public Linha findByIdLinha(Long idLinha) {
         Optional<Linha> linhaOptionale = this.iLinhaRepository.findById(idLinha);
-
+        
             return linhaOptionale.get();
-
-
     }
 
     public Linha findByCodigoLinhas (String codigoLinha){
         Optional<Linha> linhaPeperoni = this.iLinhaRepository.findByCodigoLinha(codigoLinha);
 
         return linhaPeperoni.get();
-
     }
-
-
-
+    
     public LinhaDTO update(LinhaDTO linhaDTO, Long id) {
-        Optional<Linha> linhaSuperOptional = this.iLinhaRepository.findById(id);
+        Optional<Linha> linhaOptional = this.iLinhaRepository.findById(id);
 
-        if (linhaSuperOptional.isPresent()) {
-            Linha linhaSuper = linhaSuperOptional.get();
+        if (linhaOptional.isPresent()) {
+            Linha linhaSuper = linhaOptional.get();
 
             LOGGER.info("Atualizando linha.... id:[{}]", linhaSuper.getCodigoLinha());
             LOGGER.debug("Payload: {}", linhaDTO);
             LOGGER.debug("linha existente: {}", linhaSuper);
-
 
             Categorias categorias = categoriasService.findById(linhaDTO.getIdCategoria());
 
@@ -173,7 +149,6 @@ public class LinhaService {
 
         throw new IllegalArgumentException(String.format("ID %s não existe", id));
     }
-
 
     public void delete(Long id) {
         LOGGER.info("Executando delete para linha de ID: [{}]", id);
@@ -223,18 +198,17 @@ public class LinhaService {
            Optional <Categorias> categoriasOptional = categoriasService.findByCodigoCategoria(esseVai);
             if (categoriasOptional.isPresent()) {
 
-                            linha.setCategoriaLinha(categoriasOptional.get());
-                            linha.getCategoriaLinha().setNomeCategoria(linhas[3]);
-                            this.iLinhaRepository.save(linha);
-                            LOGGER.info("Tudo ok mestre");
+               linha.setCategoriaLinha(categoriasOptional.get());
+               linha.getCategoriaLinha().setNomeCategoria(linhas[3]);
+               this.iLinhaRepository.save(linha);
+               LOGGER.info("Tudo ok mestre");
 
-            }
-                        else {
-                         throw new IllegalArgumentException("Azedo mestre");
-                        }
-
-        }
-
-    }
+            }else {
+                throw new IllegalArgumentException("Azedo mestre");
+               }
+            
+       }
+        
+   }
 
 }
