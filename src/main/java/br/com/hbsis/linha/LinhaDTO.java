@@ -17,6 +17,7 @@ public class LinhaDTO {
     this.idCategoria = idCategoria;
     this.nome = nome;
   }
+    
     public Long getId() {
         return id;
     }
@@ -57,6 +58,7 @@ public class LinhaDTO {
                 linha.getNome()
         );
     }
+    
     @Override
     public String toString() {
         return "id{" + id +
