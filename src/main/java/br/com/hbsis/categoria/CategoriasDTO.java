@@ -65,5 +65,6 @@ public class CategoriasDTO {
                 ", fornecedor_Categoria='" + idFornecedor + '\'' +
                 ", codigoCategoria='"+ codigoCategoria + '\'' +
                 '}';
+        
     }
 }
