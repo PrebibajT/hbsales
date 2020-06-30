@@ -40,12 +40,12 @@ public class PeriodoVendasService {
         LOGGER.debug("Periodo de vendas: {}", periodoVendasDTO);
 
         PeriodoVendas periodoVendas = new PeriodoVendas();
-        Fornecedor fornecedorxx = fornecedorService.findByFornecedorId(periodoVendasDTO.getIdFornecedor());
-        PeriodoVendas periodoVendasxx = this.iPeriodoVendasRepository.findAllFornecedorById(fornecedorxx.getId());
+        Fornecedor fornecedorPeriodo = fornecedorService.findByFornecedorId(periodoVendasDTO.getIdFornecedor());
+        PeriodoVendas periodoVendasFornecedor = this.iPeriodoVendasRepository.findAllFornecedorById(fornecedorPeriodo.getId());
 
-        if (periodoVendasxx == null){
+        if (periodoVendasFornecedor == null){
 
-            periodoVendas.setFornecedorPeriodo(fornecedorxx);
+            periodoVendas.setFornecedorPeriodo(fornecedorPeriodo);
             periodoVendas.setDataInicial(periodoVendasDTO.getDataInicial());
             periodoVendas.setDataFinal(periodoVendasDTO.getDataFinal());
             periodoVendas.setDataRetirada(periodoVendasDTO.getDataRetirada());
@@ -55,18 +55,18 @@ public class PeriodoVendasService {
             return PeriodoVendasDTO.of(periodoVendas);
 
         }
-                if (periodoVendasDTO.getIdFornecedor().equals(periodoVendasxx.getFornecedorPeriodo().getId())) {
+                if (periodoVendasDTO.getIdFornecedor().equals(periodoVendasFornecedor.getFornecedorPeriodo().getId())) {
 
-                    if (periodoVendasDTO.getDataInicial().isAfter(periodoVendasxx.getDataInicial()) && periodoVendasDTO.getDataInicial().isBefore(periodoVendasxx.getDataFinal())){
+                    if (periodoVendasDTO.getDataInicial().isAfter(periodoVendasFornecedor.getDataInicial()) && periodoVendasDTO.getDataInicial().isBefore(periodoVendasxx.getDataFinal())){
                         throw  new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, maxime");
                     }
-                        if(periodoVendasDTO.getDataFinal().isBefore(periodoVendasxx.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(periodoVendasxx.getDataInicial())) {
+                        if(periodoVendasDTO.getDataFinal().isBefore(periodoVendasFornecedor.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(periodoVendasxx.getDataInicial())) {
                             throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 4");
                         }
-                            if(periodoVendasDTO.getDataInicial().equals(periodoVendasxx.getDataInicial())){
+                            if(periodoVendasDTO.getDataInicial().equals(periodoVendasFornecedor.getDataInicial())){
                                   throw  new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 3");
                             }
-                                if(periodoVendasDTO.getDataFinal().equals(periodoVendasxx.getDataFinal())){
+                                if(periodoVendasDTO.getDataFinal().equals(periodoVendasFornecedor.getDataFinal())){
                                     throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 5");
                                 }
                                 else{
@@ -99,10 +99,10 @@ public class PeriodoVendasService {
         LOGGER.info("Validando produtos");
 
         if (periodoVendasDTO == null) {
-            throw new IllegalArgumentException("O periodo de vendas não pode ser nulo seu mongol");
+            throw new IllegalArgumentException("O periodo de vendas não pode ser nulo");
         }
         if (periodoVendasDTO.getIdFornecedor() == null) {
-            throw new IllegalArgumentException("O fornecedor do periodo não pode ser nulo, burrão");
+            throw new IllegalArgumentException("O fornecedor do periodo não pode ser nulo");
         }
 
         if (periodoVendasDTO.getDataInicial() == null || periodoVendasDTO.getDataInicial().isBefore(LocalDate.now())) {
@@ -118,75 +118,64 @@ public class PeriodoVendasService {
         }
 
         if (StringUtils.isEmpty(periodoVendasDTO.getDescricao())) {
-            throw new IllegalArgumentException("A descrição do período não pode ser nulo seu animal");
+            throw new IllegalArgumentException("A descrição do período não pode ser nulo");
         }
     }
 
     public PeriodoVendasDTO update (PeriodoVendasDTO periodoVendasDTO, Long id) {
         Optional<PeriodoVendas> periodoVendasOptional = this.iPeriodoVendasRepository.findById(id);
 
-        if (periodoVendasOptional.isPresent()) {
-            PeriodoVendas periodoVendasWow = periodoVendasOptional.get();
+         if (periodoVendasOptional.isPresent()) {
+           PeriodoVendas periodoVendasAtual = periodoVendasOptional.get();
 
-            if (periodoVendasWow.getDataFinal().isAfter(LocalDate.now())) {
-                throw new IllegalArgumentException("Já passou a data em que você pode alterar algo");
+           if (periodoVendasAtual.getDataFinal().isAfter(LocalDate.now())) {
+               throw new IllegalArgumentException("Já passou a data em que você pode alterar algo");
 
-            } else {
+           d}else {
 
-                LOGGER.info("Atualizando produtos.... id:[{}]", periodoVendasWow.getId());
-                LOGGER.debug("Payload: {}", periodoVendasDTO);
-                LOGGER.debug("Produtos existente: {}", periodoVendasWow);
+               LOGGER.info("Atualizando produtos.... id:[{}]", periodoVendasAtual.getId());
+               LOGGER.debug("Payload: {}", periodoVendasDTO);
+               LOGGER.debug("Produtos existente: {}", periodoVendasAtual);
 
-                Fornecedor fornecedor = this.fornecedorService.findByFornecedorId(periodoVendasDTO.getIdFornecedor());
+               Fornecedor fornecedor = this.fornecedorService.findByFornecedorId(periodoVendasDTO.getIdFornecedor());
 
-                if (periodoVendasDTO.getIdFornecedor().equals(periodoVendasWow.getFornecedorPeriodo().getId())) {
+            if (periodoVendasDTO.getIdFornecedor().equals(periodoVendasAtual.getFornecedorPeriodo().getId())) {
+                    
+                if(periodoVendasDTO.getDataInicial().isBefore(PeriodoVendasAtual.getDataInicial()) && periodoVendasDTO.getDataFinal().isBefore(PeriodoVendasAtual.getDataInicial()) || 
+                     periodoVendasDTO.getDataInicial().isAfter(PeriodoVendasAtual.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(PeriodoVendasAtual.getDataFinal())){
+                
+                
+                //faz uma white list ao invés de uma black list
+                        periodoVendasAtual.setFornecedorPeriodo(fornecedor);
+                        periodoVendasAtual.setDataInicial(periodoVendasDTO.getDataInicial());
+                        periodoVendasAtual.setDataFinal(periodoVendasDTO.getDataFinal());
+                        periodoVendasAtual.setDataRetirada(periodoVendasDTO.getDataRetirada());
+                        periodoVendasAtual.setDescricao(periodoVendasDTO.getDescricao());
 
-                    if (periodoVendasDTO.getDataInicial().isAfter(periodoVendasWow.getDataInicial()) && periodoVendasDTO.getDataInicial().isBefore(periodoVendasWow.getDataFinal())) {
-                        throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, maxime");
+                        periodoVendasAtual = this.iPeriodoVendasRepository.save(periodoVendasAtual);
 
-                    }
-                    if (periodoVendasDTO.getDataFinal().isBefore(periodoVendasWow.getDataFinal()) && periodoVendasDTO.getDataFinal().isAfter(periodoVendasWow.getDataInicial())) {
-                        throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 4");
+                        return PeriodoVendasDTO.of(periodoVendasAtual);              
 
-                    }
-                    if (periodoVendasDTO.getDataInicial().equals(periodoVendasWow.getDataInicial())) {
-                        throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 3");
-
-                    }
-                    if (periodoVendasDTO.getDataFinal().equals(periodoVendasWow.getDataFinal())) {
-                        throw new IllegalArgumentException("Ferro bahia a data ta errada meu ousado, 5");
-
-                    } else {
-
-                        periodoVendasWow.setFornecedorPeriodo(fornecedor);
-                        periodoVendasWow.setDataInicial(periodoVendasDTO.getDataInicial());
-                        periodoVendasWow.setDataFinal(periodoVendasDTO.getDataFinal());
-                        periodoVendasWow.setDataRetirada(periodoVendasDTO.getDataRetirada());
-                        periodoVendasWow.setDescricao(periodoVendasDTO.getDescricao());
-
-                        periodoVendasWow = this.iPeriodoVendasRepository.save(periodoVendasWow);
-
-                        return PeriodoVendasDTO.of(periodoVendasWow);
-
-                    }
-
-                }
+                   }else{
+                     throw new IllegalArgumentException("Não é permitido nenhum tipo de conflito entre periodos de vendas iniciados");
+              }
+                                                                                                               
             }
-        }
-
-                throw new IllegalArgumentException(String.format("ID %s não existe", id));
-            }
+                   
+         }
+          throw new IllegalArgumentException(String.format("ID %s não existe", id));
+     }
+        
     public PeriodoVendas findById (Long id){
-        Optional<PeriodoVendas> idHumido = this.iPeriodoVendasRepository.findById(id);
+        Optional<PeriodoVendas> idPeriodo = this.iPeriodoVendasRepository.findById(id);
 
-        return idHumido.get();
-
+        return idPeriodo.get();
     }
 
     public PeriodoVendas findAllByFornecedor (Long idFornecedor){
-       PeriodoVendas idHumido = this.iPeriodoVendasRepository.findAllFornecedorById(idFornecedor);
+       PeriodoVendas idFornecedor = this.iPeriodoVendasRepository.findAllFornecedorById(idFornecedor);
 
-        return idHumido;
+        return idFornecedor;
 
     }
     public void delete(Long id) {
