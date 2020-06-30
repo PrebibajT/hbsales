@@ -1,7 +1,6 @@
 package br.com.hbsis.linha;
 
 import br.com.hbsis.categoria.Categorias;
-
 import javax.persistence.*;
 
 @Entity
