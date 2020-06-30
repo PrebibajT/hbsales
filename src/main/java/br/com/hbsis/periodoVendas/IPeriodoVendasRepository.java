@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface IPeriodoVendasRepository extends JpaRepository<PeriodoVendas, Long> {
 
    PeriodoVendas findAllFornecedorById(Long idFornecedor);
-
 }
