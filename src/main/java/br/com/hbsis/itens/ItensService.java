@@ -15,7 +15,6 @@ public class ItensService {
 
     public ItensService(IItemRepository iItemRepository) {
         this.iItemRepository = iItemRepository;
-
     }
 
     public Item findByIdPedido(Long idPedido){
@@ -34,9 +33,4 @@ public class ItensService {
         return this.iItemRepository.findByIdProduto(idProduto);
 
     }
-
-
-
-
-
 }
