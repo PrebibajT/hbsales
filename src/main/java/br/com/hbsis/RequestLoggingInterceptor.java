@@ -10,6 +10,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
 import javax.xml.ws.http.HTTPBinding;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -33,7 +34,6 @@ public class RequestLoggingInterceptor implements ClientHttpRequestInterceptor {
         LOGGER.info("Request body: {}", new String(body, "UTF-8"));
         LOGGER.info("==========================request end================================================");
     }
-
 
     private void logResponse(ClientHttpResponse response) throws IOException {
         LOGGER.info("============================response begin==========================================");
