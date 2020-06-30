@@ -47,11 +47,11 @@ public class FuncionarioService {
         }
 
         if (StringUtils.isEmpty(funcionarioDTO.getEmail())) {
-            throw new IllegalArgumentException("Login não deve ser nulo/vazio");
+            throw new IllegalArgumentException("Email não deve ser nulo/vazio");
         }
 
         if (StringUtils.isEmpty(funcionarioDTO.getUuid())) {
-            throw new IllegalArgumentException("Login não deve ser nulo/vazio");
+            throw new IllegalArgumentException("Id não deve ser nulo/vazio");
         }
     }
 
